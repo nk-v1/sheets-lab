@@ -1,0 +1,1093 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Sheets Lab: a 5-day hands-on Google Sheets course with a live practice workbook.">
+<title>Sheets Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: day-grouped lesson rail | lesson text + practice | sticky live workbook. Grid-paper ground, Sheets green as the one accent. */
+:root{
+  --bg:#f4f7f5; --surface:#ffffff; --fg:#17201c; --muted:#5a6b62; --line:#d6e0da; --line-strong:#b9c8bf;
+  --accent:#137a3f; --accent-fg:#ffffff; --accent-soft:#e2f2e8; --cell:#fbfdfc; --head:#eef3f0;
+  --hl:#fff1b8; --new:#dcf3e4; --ok:#137a3f; --bad:#b3261e; --code:#eef3f0;
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body:"IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0e1412; --surface:#151d1a; --fg:#e2eae5; --muted:#93a59b; --line:#28342f; --line-strong:#3a4943;
+  --accent:#4cc27c; --accent-fg:#06150d; --accent-soft:#16301f; --cell:#111816; --head:#1a2420;
+  --hl:#4a4216; --new:#173a26; --ok:#5fd18e; --bad:#ff8a80; --code:#1c2622; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e1412; --surface:#151d1a; --fg:#e2eae5; --muted:#93a59b; --line:#28342f; --line-strong:#3a4943;
+  --accent:#4cc27c; --accent-fg:#06150d; --accent-soft:#16301f; --cell:#111816; --head:#1a2420;
+  --hl:#4a4216; --new:#173a26; --ok:#5fd18e; --bad:#ff8a80; --code:#1c2622; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15.5px;line-height:1.6;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:28px 28px;background-attachment:fixed}
+.shell{display:grid;grid-template-columns:230px minmax(0,1fr) minmax(0,460px);grid-template-areas:"nav intro data" "nav practice data";
+  gap:0 28px;max-width:1520px;margin:0 auto;padding-block:24px 64px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));align-items:start}
+nav.rail{grid-area:nav;position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);max-height:calc(100vh - 32px);overflow-y:auto}
+.intro{grid-area:intro;min-width:0}
+.practice{grid-area:practice;min-width:0}
+aside.data{grid-area:data;position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);min-width:0;max-height:calc(100vh - 32px);display:flex;flex-direction:column}
+.brand{font-family:var(--display);font-weight:700;font-size:22px;letter-spacing:-.01em;margin:0 0 2px}
+.brand span{color:var(--accent)}
+.sub{color:var(--muted);font-size:13px;margin:0 0 14px}
+.rail ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:1px}
+.rail .day{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:12px 10px 4px}
+.rail .day:first-child{padding-top:0}
+.rail a{display:flex;gap:8px;align-items:center;padding:5px 10px;border-radius:6px;color:var(--fg);text-decoration:none;font-size:13.5px}
+.rail a:hover{background:var(--surface)}
+.rail a[aria-current="page"]{background:var(--surface);box-shadow:inset 3px 0 0 var(--accent);font-weight:600}
+.rail .n{font-family:var(--mono);font-size:11.5px;color:var(--muted);width:20px;flex:none}
+.rail .tick{margin-left:auto;font-size:11.5px;color:var(--muted);font-family:var(--mono);flex:none}
+.rail .tick.done{color:var(--ok);font-weight:600}
+.progress{margin-top:14px;font-size:13px;color:var(--muted)}
+.bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.paper{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:28px 32px}
+.intro .paper{border-bottom-left-radius:0;border-bottom-right-radius:0;border-bottom:none}
+.practice .paper{border-top-left-radius:0;border-top-right-radius:0;border-top:1px dashed var(--line-strong)}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin:0 0 6px}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(28px,4vw,40px);line-height:1.1;letter-spacing:-.02em;margin:0 0 14px;text-wrap:balance}
+h2{font-family:var(--display);font-weight:500;font-size:21px;margin:26px 0 8px;text-wrap:balance}
+h3{font-size:15px;font-weight:600;margin:18px 0 6px}
+p,li{max-width:68ch}
+p{margin:0 0 12px}
+ul{padding-left:20px}
+.lede{font-size:17px}
+code{font-family:var(--mono);font-size:.88em;background:var(--code);padding:1px 5px;border-radius:4px;word-break:break-word}
+pre{font-family:var(--mono);font-size:13px;background:var(--code);padding:12px 14px;border-radius:8px;overflow-x:auto;line-height:1.5;margin:0 0 12px}
+.why{border-left:3px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 8px 8px 0;margin:16px 0}
+.why b{font-weight:600}
+.real{border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin:16px 0;background:var(--cell)}
+.real .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:4px}
+.real pre{margin:6px 0 0}
+table.map{border-collapse:collapse;width:100%;font-size:14px;margin:8px 0 16px}
+table.map th,table.map td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+table.map th{font-weight:600;background:var(--head)}
+.tablewrap{overflow-x:auto}
+.try{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0 14px}
+button{font:inherit;cursor:pointer}
+.btn{border:1px solid var(--line-strong);background:var(--surface);color:var(--fg);padding:6px 12px;border-radius:6px;font-size:14px;text-decoration:none;display:inline-block}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-fg);border-color:var(--accent);font-weight:600}
+.btn.small{padding:3px 9px;font-size:13px}
+.btn.code{font-family:var(--mono);font-size:13px;text-align:left}
+.btn.code::before{content:"▶ ";color:var(--accent)}
+.btn.code small{color:var(--muted);font-family:var(--body)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.practice h2:first-child{margin-top:0}
+.ch{border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin:0 0 14px;background:var(--surface)}
+.ch.solved{border-color:var(--ok)}
+.ch-head{display:flex;gap:10px;align-items:baseline}
+.ch-num{font-family:var(--mono);font-size:12px;color:var(--muted);flex:none}
+.ch.solved .ch-num{color:var(--ok);font-weight:600}
+.ch-q{margin:0}
+.where{display:inline-flex;gap:6px;align-items:center;font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:8px;flex-wrap:wrap}
+.where b{color:var(--fg);font-weight:500;background:var(--head);padding:1px 6px;border-radius:4px}
+.fbar{display:flex;gap:0;margin-top:8px;align-items:stretch}
+.fbar .fx{font-family:var(--mono);font-size:13px;color:var(--muted);display:flex;align-items:center;padding:0 8px;border:1px solid var(--line-strong);border-right:none;border-radius:6px 0 0 6px;background:var(--head);font-style:italic;white-space:nowrap}
+.fbar input{flex:1;min-width:0;font-family:var(--mono);font-size:14px;padding:8px 10px;border:1px solid var(--line-strong);border-radius:0 6px 6px 0;background:var(--cell);color:var(--fg)}
+.fbar input:focus{outline:2px solid var(--accent);outline-offset:-1px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.fb{margin-top:10px;font-size:14px}
+.fb.ok{color:var(--ok)}
+.fb.bad{color:var(--bad)}
+.fb .note{color:var(--muted);display:block;margin-top:4px}
+.hint{margin-top:8px;font-size:14px;color:var(--muted);background:var(--cell);border:1px dashed var(--line-strong);border-radius:6px;padding:8px 10px}
+.choices{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.choices label{display:flex;gap:8px;align-items:center;border:1px solid var(--line);border-radius:6px;padding:7px 10px;cursor:pointer}
+.choices label:hover{border-color:var(--accent)}
+.task ol{margin:8px 0 10px;padding-left:20px}
+.task .done{display:flex;gap:8px;align-items:center;font-weight:600;font-size:14px}
+.task input{accent-color:var(--accent);width:16px;height:16px}
+.out{margin-top:10px}
+.out .grid{max-height:220px}
+.navbtns{display:flex;justify-content:space-between;gap:12px;margin-top:24px;flex-wrap:wrap}
+/* workbook */
+.wb{background:var(--surface);border:1px solid var(--line);border-radius:10px;display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.wb-head{padding:12px 14px 0;display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.wb-head b{font-family:var(--display);font-weight:500;font-size:16px}
+.wb-head small{color:var(--muted);font-size:12px}
+.tabs{display:flex;gap:2px;padding:8px 10px 0;overflow-x:auto;border-bottom:1px solid var(--line);flex:none}
+.tabs button{border:1px solid transparent;border-bottom:none;background:transparent;color:var(--muted);padding:5px 9px;border-radius:6px 6px 0 0;font-family:var(--mono);font-size:12px;white-space:nowrap}
+.tabs button[aria-selected="true"]{background:var(--cell);border-color:var(--line);color:var(--accent);font-weight:500;margin-bottom:-1px}
+.grid{overflow:auto;min-height:0}
+.wb .grid{flex:1 1 auto}
+table.sheet{border-collapse:collapse;font-family:var(--mono);font-size:12px;font-variant-numeric:tabular-nums}
+table.sheet th,table.sheet td{border:1px solid var(--line);padding:3px 7px;white-space:pre;max-width:220px;overflow:hidden;text-overflow:ellipsis}
+table.sheet thead th{background:var(--head);color:var(--muted);font-weight:500;position:sticky;top:0;z-index:1;cursor:pointer}
+table.sheet tbody th{background:var(--head);color:var(--muted);font-weight:500;text-align:right;position:sticky;left:0;cursor:default}
+table.sheet.hdr tbody tr:first-child td{font-weight:600;background:var(--head)}
+table.sheet td{background:var(--cell);cursor:cell}
+table.sheet td.num{text-align:right}
+table.sheet td:hover{outline:2px solid var(--accent);outline-offset:-2px}
+table.sheet td.err{color:var(--bad)}
+table.sheet td.new{background:var(--new)}
+table.sheet td.target{outline:2px solid var(--accent);outline-offset:-2px}
+table.sheet td.flash{background:var(--hl)}
+.wb-tip{font-size:12px;color:var(--muted);padding:6px 14px;border-top:1px solid var(--line);flex:none}
+.wb-status{font-family:var(--mono);font-size:12px;padding:6px 14px;border-top:1px solid var(--line);color:var(--muted);flex:none;overflow-x:auto;white-space:nowrap}
+.wb-status b{color:var(--fg);font-weight:500}
+.scratch{border-top:1px solid var(--line);padding:10px 14px 14px;display:flex;flex-direction:column;gap:6px;flex:none}
+.scratch .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.scratch .fbar{margin-top:0}
+.scratch .fb{margin-top:4px}
+.copyrow{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 6px}
+.steps{list-style:none;padding:0;margin:0 0 12px;display:flex;flex-direction:column;gap:8px}
+.steps li{display:flex;gap:10px;align-items:flex-start;max-width:none}
+.steps input{margin-top:5px;flex:none;accent-color:var(--accent)}
+.ans{display:grid;grid-template-columns:minmax(0,1fr) 110px auto;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.ans input{font-family:var(--mono);padding:6px 8px;border:1px solid var(--line-strong);border-radius:6px;background:var(--cell);color:var(--fg);width:100%}
+.ans .res{font-size:13px;min-width:70px}
+.ans .res.ok{color:var(--ok)}.ans .res.bad{color:var(--bad)}
+@media (max-width:1200px){
+  .shell{grid-template-columns:200px minmax(0,1fr);grid-template-areas:"nav intro" "nav data" "nav practice"}
+  aside.data{position:static;max-height:none}
+  aside.data .wb{border-radius:0}
+  .wb .grid{max-height:340px}
+}
+@media (max-width:820px){
+  .shell{grid-template-columns:minmax(0,1fr);grid-template-areas:"nav" "intro" "data" "practice";padding-block:16px 48px}
+  nav.rail{position:static;margin-bottom:14px;max-height:none;overflow:visible}
+  .rail ol{flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:4px;align-items:center}
+  .rail .day{padding:0 4px 0 8px;white-space:nowrap}
+  .rail a{white-space:nowrap;border:1px solid var(--line);background:var(--surface)}
+  .rail .lt{display:none}
+  .rail a[aria-current="page"] .lt{display:inline}
+  .paper{padding:20px 18px}
+  .ans{grid-template-columns:minmax(0,1fr) 90px}
+  .ans .res{grid-column:1/-1}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <nav class="rail" aria-label="Lessons">
+    <p class="brand">Sheets <span>Lab</span></p>
+    <p class="sub">A 5-day hands-on course</p>
+    <ol id="nav"></ol>
+    <div class="progress"><span id="progText">0 of 0 done</span><div class="bar"><i id="progBar"></i></div></div>
+  </nav>
+  <section class="intro"><div class="paper" id="intro"></div></section>
+  <aside class="data" aria-label="Practice workbook">
+    <div class="wb">
+      <div class="wb-head"><b>Practice workbook</b><small>made-up data</small></div>
+      <div class="tabs" role="tablist" id="tabs"></div>
+      <div class="grid" id="sheetView"></div>
+      <div class="wb-status" id="wbStatus">Green cells show the result of your last formula.</div>
+      <div class="wb-tip">Click a cell to put its address in your formula. Shift-click a second cell for a range. Click a column letter for the whole column.</div>
+      <div class="scratch">
+        <span class="lbl">Scratch: try anything · writes to <span id="scratchAt"></span></span>
+        <div class="fbar"><span class="fx">fx</span><input id="scratchIn" class="formula" spellcheck="false" autocomplete="off" placeholder="=B2" aria-label="Scratch formula"></div>
+        <div class="actions"><button class="btn primary small" id="scratchRun">Run</button><button class="btn small" id="scratchClear">Clear</button></div>
+        <div id="scratchOut"></div>
+      </div>
+    </div>
+  </aside>
+  <section class="practice"><div class="paper" id="practice"></div></section>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/hyperformula@3.4.0/dist/hyperformula.full.min.js"></script>
+<script>
+(function(){
+"use strict";
+/* ---------- practice data (made up; no real leads) ---------- */
+const DATA = {
+  registrations: [
+    ["Submission ID","First Name","Last Name","Phone Number","Email Address","Work Experience","Current Role","utm_source","Submitted at"],
+    ["TL001","Asha","Rao","919000000001","asha.rao@example.com","0-2 years","software engineer","whatsapp","2026-10-19T09:12:40Z"],
+    ["TL002","Rahul","Verma","919000000002","rahul.verma@example.com","3-5 years","product manager","instagram","2026-10-19T11:03:05Z"],
+    ["TL003","Priya","Shah","919000000003"," Priya.Shah@Example.com ","6-10 years","founder","linkedin","2026-10-19T16:47:22Z"],
+    ["TL004","Karan","Mehta","919000000004","karan.mehta@example.com","Student / Fresher","student","whatsapp","2026-10-20T08:30:11Z"],
+    ["TL005","Neha","Iyer","919000000005","neha.iyer@example.com","3-5 years","data analyst","","2026-10-20T13:15:49Z"],
+    ["TL006","Rahul","Verma","919000000002","rahul.verma@example.com","3-5 years","product manager","whatsapp","2026-10-20T19:02:37Z"],
+    ["TL007","Sam","Carter","14155550123","sam.carter@example.com","10+ years","founder","linkedin","2026-10-21T04:55:18Z"],
+    ["TL008","Divya","Nair","919000000008","divya.nair@example.com","0-2 years","software engineer","youtube","2026-10-21T10:21:09Z"],
+    ["TL009","Arjun","Das","919000000009","arjun.das@example.com","6-10 years","engineering manager","whatsapp","2026-10-21T15:40:56Z"],
+    ["TL010","Fatima","Khan","919000000010","fatima.khan@example.com","Student / Fresher","student","instagram","2026-10-22T07:08:44Z"],
+    ["TL011","Vikram","Singh","919000000011","vikram.singh@example.com","10+ years","founder","","2026-10-22T12:36:27Z"],
+    ["TL012","Meera","Joshi","919000000012","meera.joshi@example.com","3-5 years","designer","youtube","2026-10-23T09:49:13Z"],
+    ["TL013","Rohan","Gupta","919000000013","rohan.gupta@example.com","0-2 years","data analyst","whatsapp","2026-10-24T14:27:58Z"],
+    ["TL014","Ananya","Bose","919000000014","ananya.bose@example.com","6-10 years","product manager","linkedin","2026-10-25T08:05:31Z"]
+  ],
+  ads_leads: [
+    ["First Name","Last Name","Phone Number","Email Address","Work Experience","Job Role (Raw)"],
+    ["Kavya","Reddy","919000000101","kavya.reddy@example.com","0_2 years","software engineer"],
+    ["Imran","Ali","919000000102","imran.ali@example.com","student/fresher","student"],
+    ["Sneha","Pillai","919000000103","sneha.pillai@example.com","3_5 years","product manager"],
+    ["Divya","Nair","919000000008","divya.nair@example.com","0_2 years","software engineer"],
+    ["Aditya","Kulkarni","919000000105","aditya.kulkarni@example.com","10+ years","founder"],
+    ["Pooja","Menon","919000000106","pooja.menon@example.com","6_10 years","data analyst"],
+    ["Harsh","Patel","919000000107","harsh.patel@example.com","student/fresher","student"],
+    ["Lakshay","Jain","919000000108","lakshay.jain@example.com","3_5 years","designer"]
+  ],
+  zoom: [
+    ["Email","Attended","Time in Session (min)"],
+    ["asha.rao@example.com","Yes",82],
+    ["rahul.verma@example.com","Yes",45],
+    ["priya.shah@example.com","Yes",96],
+    ["neha.iyer@example.com","Yes",12],
+    ["arjun.das@example.com","Yes",70],
+    ["meera.joshi@example.com","Yes",33],
+    ["kavya.reddy@example.com","Yes",58],
+    ["imran.ali@example.com","Yes",8],
+    ["divya.nair@example.com","Yes",64],
+    ["guest.viewer@example.com","Yes",20],
+    ["pooja.menon@example.com","Yes",101]
+  ],
+  persona_map: [
+    ["Persona","Job Role (raw)"],
+    ["Developer","software engineer"],
+    ["Developer","data analyst"],
+    ["Product Manager","product manager"],
+    ["Startup Founder","founder"],
+    ["Student","student"],
+    ["Tech Leader","engineering manager"],
+    ["Others","designer"]
+  ],
+  ad_spend: [
+    ["Ad Name","Ad Set","Platform","Spend (₹)","Leads"],
+    ["webinar_ad1","broad","ig",2450,18],
+    ["webinar_ad2","broad","ig",3120,21],
+    ["webinar_ad3","broad","fb",980,4],
+    ["webinar_ad4","interests","ig",1875,15],
+    ["webinar_ad5","interests","ig",2210,16],
+    ["webinar_ad1 – Copy","interests","fb",640,3],
+    ["webinar_ad2 – Copy","retarget","ig",1560,14],
+    ["webinar_ad3 – Copy","retarget","ig",1330,11],
+    ["webinar_ad4 – Copy","retarget","fb",410,0],
+    ["webinar_ad5 – Copy","broad","ig",2650,16]
+  ]
+};
+/* tabs that only exist in the lab: a summary page with two formulas already in, and an empty mastersheet */
+const EXTRA = {
+  summary: [
+    ["Metric","Value"],
+    ["Total spend (₹)","=SUM(ad_spend!D2:D11)"],
+    ["Total leads","=SUM(ad_spend!E2:E11)"],
+    ["Registrations (organic)",null],
+    ["Zoom attendees",null],
+    ["Overall CPL (₹)",null],
+    ["Registrations from whatsapp",null],
+    ["broad spend (₹)",null],
+    ["Instagram ads with 15+ leads",null],
+    ["Zoom: stayed 30+ min",null],
+    ["Unique organic emails",null]
+  ],
+  mastersheet: [["Email"]]
+};
+const DATA_TABS = Object.keys(DATA);
+const TABS = [...DATA_TABS, ...Object.keys(EXTRA)];
+
+/* ---------- final-project answers, computed from the data ---------- */
+const clean = s => String(s).trim().toLowerCase();
+const FINAL = (function(){
+  const org = DATA.registrations.slice(1), ads = DATA.ads_leads.slice(1), zm = DATA.zoom.slice(1);
+  const regEmails = new Set([...org.map(r=>clean(r[4])), ...ads.map(r=>clean(r[3]))]);
+  const zoomMin = new Map(zm.map(r=>[clean(r[0]), r[2]]));
+  const attended = [...regEmails].filter(e=>zoomMin.has(e));
+  const adsNo = new Set(ads.map(r=>clean(r[3])).filter(e=>!zoomMin.has(e)));
+  const avg = attended.reduce((s,e)=>s+zoomMin.get(e),0)/attended.length;
+  return [
+    {id:"q1", q:"How many registration rows are there in total (organic + ads)?", a: org.length+ads.length},
+    {id:"q2", q:"How many unique people registered? Match on cleaned email.", a: regEmails.size},
+    {id:"q3", q:"How many of those unique people attended?", a: attended.length},
+    {id:"q4", q:"Attendance %: attended ÷ unique people × 100.", a: Math.round(attended.length/regEmails.size*1000)/10},
+    {id:"q5", q:"How many Meta Ads leads did NOT attend? This is your replay WhatsApp list.", a: adsNo.size},
+    {id:"q6", q:"Average minutes in session for attendees who registered (1 decimal).", a: Math.round(avg*10)/10},
+    {id:"q7", q:"How many people joined Zoom without registering?", a: zm.filter(r=>!regEmails.has(clean(r[0]))).length}
+  ];
+})();
+
+/* ---------- lessons ---------- */
+const T = (f, at, label) => `<button class="btn code" data-try="${f.replace(/"/g,'&quot;')}" data-at="${at}">${f.replace(/&/g,'&amp;').replace(/</g,'&lt;')} <small>in ${at}</small></button>`;
+const L = [];
+
+/* ===== DAY 1 ===== */
+L.push({id:"l1", day:1, short:"Sheets are databases", eyebrow:"Day 1 · the big idea",
+title:"A Google Sheet is a small database",
+intro:`<p class="lede">A busy webinar sheet can hold thousands of registrations. It looks like a grid, but it works like a database. Every formula you learn this week is a way of asking that database a question.</p>
+<div class="tablewrap"><table class="map"><thead><tr><th>In the sheet</th><th>In a database</th><th>In a webinar sheet</th></tr></thead><tbody>
+<tr><td>A tab</td><td>A table</td><td><code>Organic</code>, <code>Ads</code>, <code>Attendance</code></td></tr>
+<tr><td>A row</td><td>A record</td><td>One registration</td></tr>
+<tr><td>A column</td><td>A field</td><td><code>Email Address</code>, <code>utm_source</code></td></tr>
+<tr><td>The header row</td><td>The schema</td><td>Row 1 of every tab</td></tr>
+<tr><td>A column that identifies each row</td><td>A key</td><td>Email, Submission ID, CRM Record ID</td></tr>
+</tbody></table></div>
+<h2>Rules that keep a sheet behaving like a database</h2>
+<ul><li>One header row. Nothing above it.</li><li>One record per row. No blank rows in the middle.</li><li>One kind of thing per column.</li><li>No merged cells inside the data.</li><li>Never type over a formula column.</li></ul>
+<div class="why"><b>The workbook on the right</b> is made up but shaped like a real webinar sheet: <code>registrations</code> (from Tally), <code>ads_leads</code> (from Meta), <code>zoom</code> (attendance), <code>persona_map</code> (a lookup list), <code>ad_spend</code> (Meta ad numbers), plus <code>summary</code> and <code>mastersheet</code> for you to fill in.</div>`,
+ch:[
+ {id:"c1a", type:"choice", q:"Which column in <code>registrations</code> is the best key for matching people to the <code>zoom</code> tab?", options:["First Name","Email Address","utm_source","Work Experience"], answer:1, explain:"Email is in both tabs and is (nearly) unique per person. Names repeat."},
+ {id:"c1b", type:"choice", q:"Rahul Verma appears in rows 3 and 7 of <code>registrations</code>. What is that called in database terms?", options:["A different person","A duplicate record","A missing key","A merged cell"], answer:1, explain:"Same email, same phone: one person who registered twice. We count people, not rows."},
+ {id:"c1c", type:"choice", q:"Zoom lists <code>guest.viewer@example.com</code>, but that email is in neither registration tab. What is it?", options:["A bug in Zoom","Someone who joined without registering","A duplicate","An ads lead"], answer:1, explain:"Rows with no partner on the other side are normal. You'll learn to count them."}
+]});
+
+L.push({id:"l2", day:1, short:"Cell references", eyebrow:"Day 1 · pointing at cells",
+title:"Cell references: =B2",
+intro:`<p class="lede">Every cell has an address: column letter + row number. <code>B2</code> is column B, row 2. A formula starts with <code>=</code> and can point at other cells on the same tab.</p>
+<ul><li><code>=B2</code> shows whatever is in B2.</li><li><code>=B2&amp;" "&amp;C2</code> joins B2, a space and C2. <code>&amp;</code> glues text together; text inside a formula goes in <code>"double quotes"</code>.</li></ul>
+<h2>Fill down: why B2 becomes B3</h2>
+<p>When you copy a formula one row down, Sheets shifts every address with it. <code>=B2&amp;" "&amp;C2</code> in row 2 becomes <code>=B3&amp;" "&amp;C3</code> in row 3. These are <b>relative references</b>: "the cell in column B on <i>my</i> row". In real Sheets you fill down by dragging the small square at the bottom-right of the cell, or by selecting the column and pressing <code>Ctrl+D</code>.</p>
+<div class="try">${T('=B2','registrations!J2')}${T('=B2&" "&C2','registrations!J2')}${T('=H5','registrations!J2')}</div>
+<div class="real"><span class="lbl">In a real webinar sheet, Organic tab column A (Name)</span><pre>=F2:F &amp; " " &amp; G2:G</pre>First Name + space + Last Name, done for the whole column at once. That part comes on Day 5.</div>`,
+ch:[
+ {id:"c2a", q:"Show Asha's first name.", at:"registrations!J2", ref:'=B2', hint:"First names are in column B. Asha is on row 2."},
+ {id:"c2b", q:"Build Asha's full name as <code>Asha Rao</code>, with a space in the middle.", at:"registrations!J2", ref:'=B2&" "&C2', hint:"First name, then <code>\" \"</code>, then last name, joined with <code>&amp;</code>."},
+ {id:"c2c", q:"Write the full-name formula in J2. Check fills it down to row 15 for you, so every row gets its own name.", at:"registrations!J2", fill:15, ref:'=B2&" "&C2', hint:"Same formula as before. Because B2 and C2 are relative, row 3 uses B3 and C3, and so on."}
+]});
+
+L.push({id:"l3", day:1, short:"Arithmetic", eyebrow:"Day 1 · numbers",
+title:"Arithmetic and comparisons",
+intro:`<p class="lede">Sheets is a calculator that remembers. Open the <code>ad_spend</code> tab: each row is a Meta ad with its spend and the leads it brought.</p>
+<div class="tablewrap"><table class="map"><thead><tr><th>Write</th><th>Means</th></tr></thead><tbody>
+<tr><td><code>+ - * /</code></td><td>Add, subtract, multiply, divide</td></tr>
+<tr><td><code>( )</code></td><td>Do this part first: <code>=(D2-500)/E2</code></td></tr>
+<tr><td><code>= &lt;&gt; &gt; &lt; &gt;= &lt;=</code></td><td>Comparisons. They answer <code>TRUE</code> or <code>FALSE</code>. <code>&lt;&gt;</code> means "not equal".</td></tr>
+</tbody></table></div>
+<p><b>CPL</b> (cost per lead) is spend ÷ leads. It's the number Meta reports are judged on.</p>
+<div class="try">${T('=D2/E2','ad_spend!F2')}${T('=D2*2','ad_spend!F2')}${T('=E2>15','ad_spend!F2')}</div>`,
+ch:[
+ {id:"c3a", q:"CPL for the first ad: spend ÷ leads.", at:"ad_spend!F2", ref:'=D2/E2', hint:"Spend is column D, leads column E."},
+ {id:"c3b", q:"Is this ad's CPL above ₹150? The answer should be TRUE or FALSE.", at:"ad_spend!G2", ref:'=D2/E2>150', hint:"Put the comparison after the division: <code>=D2/E2&gt;150</code>."},
+ {id:"c3c", q:"CPL for every ad: write it in F2, and Check fills it down to row 11. One row will show an error. Look at that ad's leads.", at:"ad_spend!F2", fill:11, ref:'=D2/E2', hint:"Same formula as the first exercise. The error is expected: you'll fix it on Day 3.", explain:"Row 10's ad got 0 leads, and dividing by zero gives <code>#DIV/0!</code>."}
+]});
+
+L.push({id:"l4", day:1, short:"Absolute references $", eyebrow:"Day 1 · locking addresses",
+title:"Absolute references: $D$12",
+intro:`<p class="lede">Sometimes a formula should point at the <i>same</i> cell on every row, like a total. Put a <code>$</code> in front of the part that must not move.</p>
+<div class="tablewrap"><table class="map"><thead><tr><th>Write</th><th>When filled down</th></tr></thead><tbody>
+<tr><td><code>D12</code></td><td>D13, D14… (moves)</td></tr>
+<tr><td><code>D$12</code></td><td>Row locked: stays D12</td></tr>
+<tr><td><code>$D12</code></td><td>Column locked, row moves</td></tr>
+<tr><td><code>$D$12</code></td><td>Fully locked</td></tr>
+</tbody></table></div>
+<p>Shortcut in Sheets: click on an address in the formula bar and press <code>F4</code> to cycle through these.</p>
+<div class="try">${T('=SUM($D$2:$D$11)','ad_spend!F2')}${T('=D2/SUM($D$2:$D$11)','ad_spend!F2')}</div>`,
+ch:[
+ {id:"c4a", q:"Each ad's share of total spend: its spend ÷ the total of D2:D11. Check fills down to row 11, so the total's range must stay locked.", at:"ad_spend!F2", fill:11, ref:'=D2/SUM($D$2:$D$11)', hint:"<code>=D2/SUM($D$2:$D$11)</code>. Try it without the $ first and look at what happens lower down."},
+ {id:"c4b", type:"choice", q:"F2 has <code>=D2/D12</code>. You fill it down. What's in F3?", options:["=D3/D12","=D3/D13","=D2/D12","=D2/D13"], answer:1, explain:"Both addresses are relative, so both move down a row. That's why totals need $."},
+ {id:"c4c", type:"choice", q:"Which version keeps pointing at row 12 when filled down?", options:["=D2/D12","=D2/$D12","=D2/D$12"], answer:2, explain:"The $ before 12 locks the row. $D$12 works too."}
+]});
+
+L.push({id:"t1", day:1, short:"Set up + move around", eyebrow:"Day 1 · in real Google Sheets",
+title:"Set up your practice sheet, and move around it",
+intro:`<p class="lede">The page checks your formulas here, but you'll work in real Google Sheets every day. Set up your own copy of the practice data now. You'll use it for the hands-on tasks and the final project.</p>
+<h2>Copy the data</h2>
+<p>Create a Google Sheet called <code>sheets_practice</code> with five tabs: <code>registrations</code>, <code>ads_leads</code>, <code>zoom</code>, <code>persona_map</code>, <code>ad_spend</code>. For each one, click its button, click A1 in the matching tab, and paste with <code>Ctrl+V</code>.</p>
+<div class="copyrow" id="copyRow"></div><p class="sub" id="copyMsg" aria-live="polite"></p>`,
+ch:[
+ {id:"k1", type:"task", q:"Set up <code>sheets_practice</code>", steps:["Create the sheet and the five tabs, named exactly as above.","Paste each tab's data into A1.","Check that the phone numbers still have all their digits (Format → Number → Plain text if not)."]},
+ {id:"k24", type:"task", q:"Freeze the header, and use a filter view", steps:["In <code>registrations</code>: View → Freeze → 1 row. Scroll down and watch the header stay put.","Data → Create a filter view. Filter utm_source to <code>whatsapp</code>.","Close the filter view. Everything is back. A filter view only changes <i>your</i> screen, while a normal filter or sort changes it for everyone. On shared sheets, always use filter views."]},
+ {id:"k28", type:"task", q:"Find &amp; replace, and the shortcuts you'll use daily", steps:["<code>Ctrl+H</code>: in <code>ads_leads</code>, replace <code>_</code> with <code>-</code> in the Work Experience column only (use \"Specific range\"). Then undo with <code>Ctrl+Z</code>.","<code>Ctrl+↓</code> jumps to the last filled cell; <code>Ctrl+Shift+↓</code> selects down to it.","<code>Ctrl+Shift+V</code> pastes values only (Day 2). <code>Ctrl+/</code> shows all shortcuts."]}
+]});
+
+/* ===== DAY 2 ===== */
+L.push({id:"l5", day:2, short:"SUM, AVERAGE, MEDIAN", eyebrow:"Day 2 · basic functions",
+title:"SUM, AVERAGE, MEDIAN, MIN, MAX",
+intro:`<p class="lede">A function is a named calculation: <code>=SUM(D2:D11)</code>. The part in brackets is a <b>range</b>: D2 down to D11.</p>
+<div class="tablewrap"><table class="map"><thead><tr><th>Function</th><th>Answers</th></tr></thead><tbody>
+<tr><td><code>SUM(range)</code></td><td>The total</td></tr>
+<tr><td><code>AVERAGE(range)</code></td><td>Total ÷ how many</td></tr>
+<tr><td><code>MEDIAN(range)</code></td><td>The middle value when sorted</td></tr>
+<tr><td><code>MIN(range)</code> / <code>MAX(range)</code></td><td>Smallest / largest</td></tr>
+</tbody></table></div>
+<h2>Average or median?</h2>
+<p>An average gets pulled by extremes. In the <code>zoom</code> tab, one person stayed 101 minutes and another 8. The median ignores how extreme they are and gives you the "typical" attendee. When you report time-in-session, give both.</p>
+<div class="try">${T('=SUM(D2:D11)','ad_spend!H2')}${T('=AVERAGE(C2:C12)','zoom!E2')}${T('=MEDIAN(C2:C12)','zoom!E2')}</div>`,
+ch:[
+ {id:"c5a", q:"Total spend across all ads.", at:"ad_spend!H2", ref:'=SUM(D2:D11)', must:["SUM"], hint:"Select D2 to D11: click D2, then shift-click D11."},
+ {id:"c5b", q:"Average spend per ad.", at:"ad_spend!H2", ref:'=AVERAGE(D2:D11)', must:["AVERAGE"], hint:"Same range, different function."},
+ {id:"c5c", q:"Median minutes in session.", at:"zoom!E2", ref:'=MEDIAN(C2:C12)', must:["MEDIAN"], hint:"Minutes are column C of <code>zoom</code>, rows 2 to 12."},
+ {id:"c5d", q:"The most leads any single ad got.", at:"ad_spend!H2", ref:'=MAX(E2:E11)', must:["MAX"], hint:"Leads are column E."}
+]});
+
+L.push({id:"l6", day:2, short:"COUNT, COUNTA, ROUND", eyebrow:"Day 2 · counting and rounding",
+title:"COUNT, COUNTA and ROUND",
+intro:`<ul><li><code>COUNT(range)</code> counts cells that hold <b>numbers</b>.</li><li><code>COUNTA(range)</code> counts cells that are <b>not empty</b> (text or numbers).</li><li><code>ROUND(value, places)</code>: <code>ROUND(136.111, 0)</code> → 136, <code>ROUND(136.111, 1)</code> → 136.1.</li></ul>
+<p>In our sheets, "how many registrations?" is almost always a <code>COUNTA</code> on a column that's always filled, like Submission ID or Email.</p>
+<div class="try">${T('=COUNTA(A2:A15)','registrations!J2')}${T('=COUNTA(H2:H15)','registrations!J2')}${T('=COUNT(D2:D11)','ad_spend!H2')}</div>`,
+ch:[
+ {id:"c6a", q:"How many registrations have a <code>utm_source</code> filled in? (Some are blank.)", at:"registrations!J2", ref:'=COUNTA(H2:H15)', must:["COUNTA"], hint:"COUNTA skips empty cells."},
+ {id:"c6b", q:"CPL of the first ad, rounded to a whole rupee.", at:"ad_spend!F2", ref:'=ROUND(D2/E2,0)', must:["ROUND"], hint:"Put the division inside ROUND: <code>ROUND(D2/E2, 0)</code>."}
+]});
+
+L.push({id:"l7", day:2, short:"Other tabs", eyebrow:"Day 2 · reaching across tabs",
+title:"Referencing other tabs: zoom!C2",
+intro:`<p class="lede">So far every formula used its own tab. To use a cell from another tab, put the tab name and <code>!</code> in front.</p>
+<div class="tablewrap"><table class="map"><thead><tr><th>Write</th><th>Means</th></tr></thead><tbody>
+<tr><td><code>zoom!C2</code></td><td>C2 on the <code>zoom</code> tab</td></tr>
+<tr><td><code>ad_spend!D2:D11</code></td><td>A range on another tab</td></tr>
+<tr><td><code>'Ads - Meta'!A2</code></td><td>Tab names with spaces or dashes need single quotes</td></tr>
+</tbody></table></div>
+<p>This is how a <b>summary tab</b> works: it holds no data of its own, just formulas that reach into the other tabs. Open <code>summary</code>: B2 and B3 already do this. Click B2 in the workbook and look at the status line under the grid.</p>
+<p>Tip: when you're typing a formula in Sheets, you can click over to another tab and click a cell, and Sheets writes the <code>tab!</code> part for you. The workbook here does the same.</p>
+<div class="try">${T('=zoom!C2','summary!D2')}${T('=COUNTA(registrations!A2:A15)','summary!B4')}</div>`,
+ch:[
+ {id:"c7a", q:"How many organic registrations are there? Count the Submission IDs on <code>registrations</code>.", at:"summary!B4", ref:'=COUNTA(registrations!A2:A15)', must:["COUNTA"], hint:"<code>COUNTA(registrations!A2:A15)</code>"},
+ {id:"c7b", q:"How many people are in the Zoom report?", at:"summary!B5", ref:'=COUNTA(zoom!A2:A12)', hint:"Same idea, on the zoom tab's email column."},
+ {id:"c7c", q:"Overall CPL: total spend ÷ total leads. Both are already on this tab.", at:"summary!B6", ref:'=B2/B3', hint:"B2 and B3 are on the same tab as B6, so no tab name is needed."}
+]});
+
+L.push({id:"l8", day:2, short:"IF, AND, OR", eyebrow:"Day 2 · decisions",
+title:"IF, AND, OR",
+intro:`<pre>=IF( test , value_if_true , value_if_false )</pre>
+<ul><li><code>=IF(E2&lt;10, "Check", "OK")</code>: fewer than 10 leads gets "Check".</li>
+<li><code>AND(test1, test2)</code> is TRUE only if <b>both</b> are true. <code>OR(test1, test2)</code> is TRUE if <b>either</b> is.</li>
+<li>Put them inside IF: <code>=IF(AND(C2="ig", E2&gt;=15), "Scale", "")</code>. <code>""</code> means "leave it looking empty".</li></ul>
+<div class="try">${T('=IF(E2<10,"Check","OK")','ad_spend!F2')}${T('=AND(C2="ig",E2>=15)','ad_spend!F2')}</div>`,
+ch:[
+ {id:"c8a", q:"Flag every ad: <code>Check</code> if it got fewer than 10 leads, else <code>OK</code>. Fills down to row 11.", at:"ad_spend!F2", fill:11, ref:'=IF(E2<10,"Check","OK")', must:["IF"], hint:"<code>IF(E2&lt;10, \"Check\", \"OK\")</code>"},
+ {id:"c8b", q:"Mark Instagram ads (<code>ig</code>) with 15 or more leads as <code>Scale</code>, everything else blank. Fills down to row 11.", at:"ad_spend!F2", fill:11, ref:'=IF(AND(C2="ig",E2>=15),"Scale","")', must:["IF","AND"], hint:"Both conditions must be true, so use AND."},
+ {id:"c8c", q:"Tag each registration <code>Community</code> if utm_source is whatsapp OR instagram, else <code>Other</code>. Fills down to row 15.", at:"registrations!J2", fill:15, ref:'=IF(OR(H2="whatsapp",H2="instagram"),"Community","Other")', must:["IF","OR"], hint:"Either condition is enough, so use OR."}
+]});
+
+L.push({id:"t2", day:2, short:"Paste values only", eyebrow:"Day 2 · in real Google Sheets",
+title:"Paste special: values only",
+intro:`<p class="lede">CRM imports and messaging-tool uploads need <b>plain values</b>, not formulas. If you copy a formula column and paste it somewhere else, it either breaks or recalculates. Paste values only (<code>Ctrl+Shift+V</code>) freezes what you see.</p>
+<div class="real"><span class="lbl">In a weekly cycle</span>The Master tab's Record ID column is copied, then pasted back with <b>paste special → values</b>, so the IDs stay fixed.</div>`,
+ch:[
+ {id:"k25", type:"task", q:"Freeze a formula into values", steps:["In your practice sheet's <code>registrations</code>, J2: <code>=B2&amp;\" \"&amp;C2</code>, filled down to row 15.","Select J2:J15, copy, then right-click → Paste special → Values only (or <code>Ctrl+Shift+V</code>).","Click J5: the formula bar now shows plain text, not a formula."]}
+]});
+
+/* ===== DAY 3 ===== */
+L.push({id:"l9", day:3, short:"TRIM, LOWER, PROPER", eyebrow:"Day 3 · cleaning text",
+title:"TRIM, LOWER, UPPER, PROPER",
+intro:`<p class="lede">People type their details however they like. Look at Priya's email in row 4: <code> Priya.Shah@Example.com </code>, with spaces at both ends and capitals. Zoom has it as <code>priya.shah@example.com</code>. To a computer those don't match until you clean them.</p>
+<div class="tablewrap"><table class="map"><thead><tr><th>Function</th><th>Does</th></tr></thead><tbody>
+<tr><td><code>TRIM(x)</code></td><td>Removes spaces at the start and end (and doubled spaces)</td></tr>
+<tr><td><code>LOWER(x)</code> / <code>UPPER(x)</code></td><td>all lowercase / ALL CAPS</td></tr>
+<tr><td><code>PROPER(x)</code></td><td>Title Case: <code>software engineer</code> → <code>Software Engineer</code></td></tr>
+</tbody></table></div>
+<p>Functions nest: <code>LOWER(TRIM(E4))</code> trims first, then lowercases. Always clean emails before matching them.</p>
+<div class="try">${T('=TRIM(E4)','registrations!J4')}${T('=PROPER(G2)','registrations!J2')}</div>`,
+ch:[
+ {id:"c9a", q:"Clean Priya's email: no outer spaces, all lowercase.", at:"registrations!J4", ref:'=LOWER(TRIM(E4))', must:["TRIM","LOWER"], hint:"<code>LOWER(TRIM(E4))</code>"},
+ {id:"c9b", q:"A clean email column for every registration. Fills down to row 15.", at:"registrations!J2", fill:15, ref:'=LOWER(TRIM(E2))', must:["TRIM","LOWER"], hint:"Same as the last one, starting from row 2."},
+ {id:"c9c", q:"Job roles in Title Case for every ads lead. Fills down to row 9.", at:"ads_leads!G2", fill:9, ref:'=PROPER(F2)', must:["PROPER"], hint:"The raw role is column F."}
+]});
+
+L.push({id:"l10", day:3, short:"LEFT, RIGHT, MID, LEN", eyebrow:"Day 3 · cutting text",
+title:"LEFT, RIGHT, MID, LEN",
+intro:`<div class="tablewrap"><table class="map"><thead><tr><th>Function</th><th>Example</th><th>Result</th></tr></thead><tbody>
+<tr><td><code>LEFT(x, n)</code></td><td><code>LEFT("919000000001", 2)</code></td><td><code>91</code></td></tr>
+<tr><td><code>RIGHT(x, n)</code></td><td><code>RIGHT("919000000001", 4)</code></td><td><code>0001</code></td></tr>
+<tr><td><code>MID(x, start, n)</code></td><td><code>MID("2026-10-19T09:12:40Z", 12, 5)</code></td><td><code>09:12</code></td></tr>
+<tr><td><code>LEN(x)</code></td><td><code>LEN("919000000001")</code></td><td><code>12</code></td></tr>
+</tbody></table></div>
+<p>Indian numbers with the country code are 12 digits and start with <code>91</code>. Tally timestamps look like <code>2026-10-19T09:12:40Z</code>: the first 10 characters are the date.</p>
+<div class="try">${T('=LEFT(D2,2)','registrations!J2')}${T('=LEN(D8)','registrations!J8')}${T('=MID(I2,12,5)','registrations!J2')}</div>
+<div class="real"><span class="lbl">In a real webinar sheet (International Lead)</span><pre>=IF(H2:H&lt;&gt;"", IF(LEFT(H2:H, 2) = "91", "No", "Yes"), "")</pre>If there's a phone: starts with 91 means India ("No"), anything else is international ("Yes").</div>`,
+ch:[
+ {id:"c10a", q:"International Lead for every row: <code>No</code> if the phone starts with 91, else <code>Yes</code>. Fills down to row 15.", at:"registrations!J2", fill:15, ref:'=IF(LEFT(D2,2)="91","No","Yes")', must:["LEFT","IF"], hint:"<code>IF(LEFT(D2,2)=\"91\", \"No\", \"Yes\")</code>"},
+ {id:"c10b", q:"Just the date part of Asha's Submitted at.", at:"registrations!J2", ref:'=LEFT(I2,10)', must:["LEFT"], hint:"The date is the first 10 characters of column I."},
+ {id:"c10c", q:"How many characters are in Sam's phone number (row 8)?", at:"registrations!J8", ref:'=LEN(D8)', must:["LEN"], hint:"One less than an Indian number. That's another way to spot internationals."}
+]});
+
+L.push({id:"l11", day:3, short:"SUBSTITUTE", eyebrow:"Day 3 · replacing text",
+title:"SUBSTITUTE: fix the same mistake everywhere",
+intro:`<pre>=SUBSTITUTE( text , find , replace_with )</pre>
+<p>Meta sends experience as <code>3_5 years</code> and <code>student/fresher</code>; Tally says <code>3-5 years</code> and <code>Student / Fresher</code>. Until they match, every count by experience is wrong. Stack SUBSTITUTEs to fix several things at once.</p>
+<div class="try">${T('=SUBSTITUTE(E2,"_","-")','ads_leads!G2')}</div>
+<div class="real"><span class="lbl">In a real webinar sheet, Ads tab</span><pre>SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(…,"student/fresher","Student"),"Fresher","Student"),"_"," ")</pre>Three replacements stacked inside each other.</div>`,
+ch:[
+ {id:"c11a", q:"Turn every ads lead's experience into the dash format (<code>3_5 years</code> → <code>3-5 years</code>). Fills down to row 9.", at:"ads_leads!G2", fill:9, ref:'=SUBSTITUTE(E2,"_","-")', must:["SUBSTITUTE"], hint:"Find <code>\"_\"</code>, replace with <code>\"-\"</code>."},
+ {id:"c11b", q:"Now also turn <code>student/fresher</code> into <code>Student / Fresher</code>, in the same formula. Fills down to row 9.", at:"ads_leads!G2", fill:9, ref:'=SUBSTITUTE(SUBSTITUTE(E2,"_","-"),"student/fresher","Student / Fresher")', must:["SUBSTITUTE"], hint:"Wrap your first SUBSTITUTE inside a second one."}
+]});
+
+L.push({id:"l12", day:3, short:"TEXTJOIN & SPLIT", eyebrow:"Day 3 · joining and splitting",
+title:"TEXTJOIN and SPLIT",
+intro:`<ul><li><code>TEXTJOIN(separator, TRUE, range)</code> joins many cells with a separator. The <code>TRUE</code> means skip empty cells. Handy for putting a list of values in one cell.</li>
+<li><code>SPLIT(text, separator)</code> does the opposite: <code>=SPLIT("Asha Rao", " ")</code> fills two cells, <code>Asha</code> | <code>Rao</code>. Use it on emails (<code>"@"</code>) or full names.</li></ul>
+<p>SPLIT works in real Google Sheets but not in this workbook, so you'll practise it in your own sheet.</p>
+<div class="try">${T('=TEXTJOIN(", ",TRUE,H2:H6)','registrations!J2')}</div>`,
+ch:[
+ {id:"c12a", q:"Asha's full name with TEXTJOIN (space separator).", at:"registrations!J2", ref:'=TEXTJOIN(" ",TRUE,B2,C2)', must:["TEXTJOIN"], hint:"<code>TEXTJOIN(\" \", TRUE, B2, C2)</code>"},
+ {id:"c12b", q:"All the utm_sources of rows 2–6 in one cell, separated by <code>, </code> (comma and space). Blank ones skipped.", at:"registrations!J2", ref:'=TEXTJOIN(", ",TRUE,H2:H6)', must:["TEXTJOIN"], hint:"Separator <code>\", \"</code>, TRUE, then the range."},
+ {id:"k12", type:"task", q:"SPLIT, in your own sheet", steps:["In your practice sheet's <code>registrations</code>, J2: <code>=SPLIT(E2,\"@\")</code>. It fills J2 and K2.","Fill it down. Every email splits into name | domain.","Delete J:K when done."]}
+]});
+
+L.push({id:"l13", day:3, short:"IFERROR", eyebrow:"Day 3 · handling errors",
+title:"IFERROR: a clean answer instead of an error",
+intro:`<pre>=IFERROR( formula , what_to_show_instead )</pre>
+<p>Remember the <code>#DIV/0!</code> on Day 1? That ad had 0 leads. <code>IFERROR(D2/E2, 0)</code> shows 0 when the division fails. IFERROR is everywhere in our sheets, mostly around lookups (Day 4).</p>
+<div class="tablewrap"><table class="map"><thead><tr><th>Error</th><th>Usually means</th></tr></thead><tbody>
+<tr><td><code>#DIV/0!</code></td><td>Divided by zero or an empty cell</td></tr>
+<tr><td><code>#N/A</code></td><td>A lookup didn't find what it searched for</td></tr>
+<tr><td><code>#NAME?</code></td><td>Misspelled function, or text without quotes</td></tr>
+<tr><td><code>#REF!</code></td><td>Points at something that doesn't exist, or a spill is blocked</td></tr>
+<tr><td><code>#VALUE!</code></td><td>Wrong kind of input</td></tr>
+</tbody></table></div>
+<p><b>Careful:</b> IFERROR hides <i>every</i> error, including real mistakes. Only wrap formulas you've already checked work.</p>`,
+ch:[
+ {id:"c13a", q:"CPL for every ad, showing <code>0</code> instead of <code>#DIV/0!</code>. Fills down to row 11.", at:"ad_spend!F2", fill:11, ref:'=IFERROR(D2/E2,0)', must:["IFERROR"], hint:"<code>IFERROR(D2/E2, 0)</code>"},
+ {id:"c13b", q:"Rounded CPL for every ad, showing <code>no leads</code> when there are none. Fills down to row 11.", at:"ad_spend!F2", fill:11, ref:'=IFERROR(ROUND(D2/E2,0),"no leads")', must:["IFERROR","ROUND"], hint:"ROUND inside IFERROR."}
+]});
+
+L.push({id:"t3", day:3, short:"Highlight duplicates", eyebrow:"Day 3 · in real Google Sheets",
+title:"Conditional formatting: make duplicates jump out",
+intro:`<p class="lede">Conditional formatting colours cells that match a rule. It's the fastest way to spot duplicates before an import.</p>`,
+ch:[
+ {id:"k26", type:"task", q:"Highlight duplicate emails", steps:["In your practice sheet's <code>registrations</code>, select E2:E15.","Format → Conditional formatting → Format cells if… → <b>Custom formula is</b>: <code>=COUNTIF($E$2:$E$15,E2)&gt;1</code>, then pick a fill colour.","Rahul's two rows light up. Why doesn't Priya's? (Hint: the duplicate is in another tab.)"]}
+]});
+
+/* ===== DAY 4 ===== */
+L.push({id:"l14", day:4, short:"COUNTIF & SUMIF", eyebrow:"Day 4 · group by",
+title:"COUNTIF, COUNTIFS, SUMIF, SUMIFS",
+intro:`<p class="lede">Most questions from your manager or the sales team are counts by group: how many from WhatsApp, how much spent on one ad set. These answer them in one cell, like a database's GROUP BY.</p>
+<div class="tablewrap"><table class="map"><thead><tr><th>Formula</th><th>Answers</th></tr></thead><tbody>
+<tr><td><code>COUNTIF(range, "whatsapp")</code></td><td>How many cells equal whatsapp</td></tr>
+<tr><td><code>COUNTIF(range, "&gt;=30")</code></td><td>How many are 30 or more (the test goes in quotes)</td></tr>
+<tr><td><code>COUNTIFS(r1, c1, r2, c2)</code></td><td>How many meet <b>both</b> conditions</td></tr>
+<tr><td><code>SUMIF(range, test, sum_range)</code></td><td>Total of sum_range where range passes the test</td></tr>
+<tr><td><code>SUMIFS(sum_range, r1, c1, r2, c2)</code></td><td>Same, with several conditions (note: sum_range comes first)</td></tr>
+</tbody></table></div>
+<p>These go on the <code>summary</code> tab, reaching across to the data tabs.</p>`,
+ch:[
+ {id:"c14a", q:"Registrations from whatsapp.", at:"summary!B7", ref:'=COUNTIF(registrations!H2:H15,"whatsapp")', must:["COUNTIF"], hint:"utm_source is column H of registrations."},
+ {id:"c14b", q:"Total spend on the <code>broad</code> ad set.", at:"summary!B8", ref:'=SUMIF(ad_spend!B2:B11,"broad",ad_spend!D2:D11)', must:["SUMIF"], hint:"Test column B (ad set), sum column D (spend)."},
+ {id:"c14c", q:"How many Instagram (<code>ig</code>) ads got 15 or more leads?", at:"summary!B9", ref:'=COUNTIFS(ad_spend!C2:C11,"ig",ad_spend!E2:E11,">=15")', must:["COUNTIFS"], hint:"Two conditions: platform is ig, and leads <code>\"&gt;=15\"</code>."},
+ {id:"c14d", q:"How many people in Zoom stayed 30 minutes or more?", at:"summary!B10", ref:'=COUNTIF(zoom!C2:C12,">=30")', must:["COUNTIF"], hint:"<code>\"&gt;=30\"</code> in quotes."}
+]});
+
+L.push({id:"l15", day:4, short:"UNIQUE & duplicates", eyebrow:"Day 4 · counting people, not rows",
+title:"UNIQUE, and finding duplicates",
+intro:`<ul><li><code>UNIQUE(range)</code> lists each value once. It <b>spills</b>: it writes down into the cells below, which must be empty.</li>
+<li><code>COUNTA(UNIQUE(range))</code> counts distinct values, so "how many people", not "how many rows".</li>
+<li><code>COUNTIF($E$2:$E$15, E2)&gt;1</code> on each row is TRUE when that row's email appears more than once. Note the $: the range stays fixed while E2 moves.</li></ul>
+<div class="try">${T('=UNIQUE(H2:H15)','registrations!J2')}${T('=COUNTIF($E$2:$E$15,E2)','registrations!J2')}</div>`,
+ch:[
+ {id:"c15a", q:"How many unique email addresses are in <code>registrations</code>?", at:"summary!B11", ref:'=COUNTA(UNIQUE(registrations!E2:E15))', must:["UNIQUE"], hint:"<code>COUNTA(UNIQUE(…))</code>"},
+ {id:"c15b", q:"Mark duplicate rows: <code>Duplicate</code> if that row's email appears more than once, else blank. Fills down to row 15.", at:"registrations!J2", fill:15, ref:'=IF(COUNTIF($E$2:$E$15,E2)>1,"Duplicate","")', must:["COUNTIF"], hint:"Lock the range with $ (Day 1) so it doesn't shift as it fills."},
+ {id:"c15c", q:"List each utm_source once.", at:"registrations!J2", ref:'=UNIQUE(H2:H15)', must:["UNIQUE"], hint:"One blank shows up too, because some rows have no source. That's normal."}
+]});
+
+L.push({id:"l16", day:4, short:"VLOOKUP", eyebrow:"Day 4 · joining two tabs",
+title:"VLOOKUP: bring a value across from another tab",
+intro:`<p class="lede">The registration tab knows who signed up; the Zoom tab knows who showed up. To answer "did this person attend?", join the two on the key: email.</p>
+<pre>=VLOOKUP( key , where_to_look , which_column , FALSE )</pre>
+<ul><li><b>key</b>: what you're searching for, e.g. <code>E2</code></li>
+<li><b>where_to_look</b>: a range whose <b>first column</b> holds the keys, e.g. <code>zoom!A:C</code></li>
+<li><b>which_column</b>: counted from the left of that range. In <code>zoom!A:C</code>, 1 = Email, 2 = Attended, 3 = Minutes.</li>
+<li><b>FALSE</b>: exact match. <b>Always write FALSE (or 0).</b> Without it VLOOKUP guesses and quietly returns wrong rows.</li></ul>
+<p>Not found gives <code>#N/A</code>, which for us usually means "didn't attend". Wrap it: <code>IFERROR(VLOOKUP(…), "No")</code>.</p>
+<div class="try">${T('=VLOOKUP(E2,zoom!A:C,3,FALSE)','registrations!J2')}${T('=VLOOKUP(E4,zoom!A:C,3,FALSE)','registrations!J4')}</div>
+<div class="real"><span class="lbl">In a real webinar sheet (Attended Webinar, Time in Session)</span><pre>=VLOOKUP(I2, Attendance!A:C, 2, 0)
+=VLOOKUP(I2, Attendance!A:C, 3, 0)</pre>Email is column I there. Every #N/A is then turned into No / 0.</div>`,
+ch:[
+ {id:"c16a", q:"Asha's minutes in session.", at:"registrations!J2", ref:'=VLOOKUP(E2,zoom!A:C,3,FALSE)', must:["VLOOKUP"], hint:"Minutes are column 3 of <code>zoom!A:C</code>."},
+ {id:"c16b", q:"The <b>Attended Webinar</b> column: <code>Yes</code> or <code>No</code> for every row. Priya attended, so she must come out <code>Yes</code>. Fills down to row 15.", at:"registrations!J2", fill:15, ref:'=IFERROR(VLOOKUP(TRIM(E2),zoom!A:C,2,FALSE),"No")', must:["VLOOKUP","IFERROR"], hint:"Clean the key (Day 3) before looking it up, then wrap it in IFERROR."},
+ {id:"c16c", q:"The <b>Time in Session</b> column: minutes, or <code>0</code> if absent. Fills down to row 15.", at:"registrations!K2", fill:15, ref:'=IFERROR(VLOOKUP(TRIM(E2),zoom!A:C,3,FALSE),0)', must:["VLOOKUP","IFERROR"], hint:"Same as the last one, column 3, 0 instead of \"No\"."}
+]});
+
+L.push({id:"l17", day:4, short:"XLOOKUP", eyebrow:"Day 4 · the modern lookup",
+title:"XLOOKUP: look up in any direction",
+intro:`<p class="lede">VLOOKUP needs the key in the <b>first</b> column, and its column number breaks when someone inserts a column. XLOOKUP fixes both.</p>
+<pre>=XLOOKUP( key , column_to_search , column_to_return , if_not_found )</pre>
+<p>In <code>persona_map</code>, the persona is in column A and the raw job role, the key, is in column B. VLOOKUP can't look left; XLOOKUP doesn't care.</p>
+<div class="try">${T('=XLOOKUP(F2,persona_map!B:B,persona_map!A:A)','ads_leads!G2')}</div>
+<div class="real"><span class="lbl">In a real webinar sheet, Ads tab (Persona), simplified</span><pre>VLOOKUP( role , {'Role Map'!C2:C, 'Role Map'!B2:B} , 2 , FALSE )</pre>The <code>{C, B}</code> trick flips the columns so VLOOKUP can look left. XLOOKUP does it directly.</div>`,
+ch:[
+ {id:"c17a", q:"Persona for every ads lead. Fills down to row 9.", at:"ads_leads!G2", fill:9, ref:'=XLOOKUP(F2,persona_map!B:B,persona_map!A:A)', must:["XLOOKUP"], hint:"Search persona_map column B, return column A."},
+ {id:"c17b", q:"Minutes in session for every registration with XLOOKUP, showing <code>0</code> when absent, without IFERROR. Fills down to row 15.", at:"registrations!J2", fill:15, ref:'=XLOOKUP(TRIM(E2),zoom!A:A,zoom!C:C,0)', must:["XLOOKUP"], ban:["IFERROR"], hint:"XLOOKUP's 4th argument is what to show when nothing is found. Don't forget TRIM."}
+]});
+
+L.push({id:"l18", day:4, short:"INDEX + MATCH", eyebrow:"Day 4 · reading older sheets",
+title:"INDEX + MATCH",
+intro:`<p class="lede">Before XLOOKUP, people did the same job with two functions. You'll meet it in older sheets, so learn to read it.</p>
+<ul><li><code>MATCH(key, column, 0)</code>: "at which position is it?" (0 = exact)</li><li><code>INDEX(column, 5)</code>: "what's at position 5?"</li></ul>
+<pre>=INDEX( column_to_return , MATCH( key , column_to_search , 0 ) )</pre>
+<div class="try">${T('=MATCH("student",B:B,0)','persona_map!D2')}${T('=INDEX(A:A,6)','persona_map!D2')}</div>`,
+ch:[
+ {id:"c18a", q:"At which position is <code>founder</code> in column B?", at:"persona_map!D2", ref:'=MATCH("founder",B:B,0)', must:["MATCH"], hint:"The whole column B, so the header is position 1."},
+ {id:"c18b", q:"Aditya's persona (his raw role is F6) using INDEX + MATCH.", at:"ads_leads!G6", ref:'=INDEX(persona_map!A:A,MATCH(F6,persona_map!B:B,0))', must:["INDEX","MATCH"], hint:"MATCH inside INDEX."}
+]});
+
+L.push({id:"t4", day:4, short:"Dropdowns + pivot", eyebrow:"Day 4 · in real Google Sheets",
+title:"Data validation and pivot tables",
+intro:`<p class="lede">Two things you'll use often: dropdowns that stop people typing their own spellings, and pivot tables that count by group with clicks instead of formulas. Most webinar sheets have one.</p>`,
+ch:[
+ {id:"k27", type:"task", q:"A Lead Status dropdown", steps:["In your practice <code>registrations</code>, add header <code>Lead Status</code> in J1. Select J2:J15.","Data → Data validation → Add rule → Dropdown, with options: New, Contacted, Interested, Qualified, Not interested.","Try typing <code>intrested</code> in a cell: Sheets rejects it. That's the point."]},
+ {id:"k29", type:"task", q:"A pivot table: registrations by source", steps:["Click inside <code>registrations</code>, then Insert → Pivot table → New sheet.","Rows: <code>utm_source</code>. Values: <code>Submission ID</code>, summarised by COUNTA.","Compare with your Day 4 COUNTIF for whatsapp. They should match (5)."]}
+]});
+
+/* ===== DAY 5 ===== */
+L.push({id:"l19", day:5, short:"FILTER & SORT", eyebrow:"Day 5 · pulling lists",
+title:"FILTER and SORT: build lists, not just numbers",
+intro:`<p class="lede">COUNTIF tells you <i>how many</i>. FILTER gives you <i>who</i>: the actual rows, spilled down the sheet. This is how you build a WhatsApp list.</p>
+<pre>=FILTER( what_to_show , condition , [another_condition] )
+=SORT( range , column_number , TRUE_for_ascending )</pre>
+<p>The condition is a test on a column of the same height: <code>H2:H15="linkedin"</code>. Extra conditions with commas must all be true. Nothing found gives <code>#N/A</code>.</p>
+<p><b>Spill rule:</b> FILTER, SORT, UNIQUE, VSTACK and ARRAYFORMULA write into cells below and to the right. Those must be empty, or you get <code>#REF!</code>.</p>
+<div class="try">${T('=FILTER(B2:C15,H2:H15="youtube")','registrations!J2')}${T('=SORT(A2:C12,3,FALSE)','zoom!E2')}</div>`,
+ch:[
+ {id:"c19a", q:"First names of everyone who came from linkedin.", at:"registrations!J2", ref:'=FILTER(B2:B15,H2:H15="linkedin")', must:["FILTER"], hint:"Show column B where column H = \"linkedin\". Keep both ranges the same height."},
+ {id:"c19b", q:"Zoom emails of people who stayed <b>under</b> 30 minutes.", at:"zoom!E2", ref:'=FILTER(A2:A12,C2:C12<30)', must:["FILTER"], hint:"Condition: <code>C2:C12&lt;30</code>."},
+ {id:"c19c", q:"The whole Zoom list (A2:C12), longest stay first.", at:"zoom!E2", ref:'=SORT(A2:C12,3,FALSE)', must:["SORT"], hint:"Sort by the 3rd column of the range, FALSE for descending."}
+]});
+
+L.push({id:"l20", day:5, short:"VSTACK", eyebrow:"Day 5 · stacking tabs",
+title:"VSTACK: one list from several tabs",
+intro:`<p class="lede"><code>VSTACK(range1, range2)</code> puts one range on top of another. That's how a webinar sheet's Master tab joins organic and ads registrations into one tab: a UNION, in database terms.</p>
+<div class="real"><span class="lbl">In a real webinar sheet, Master tab cell B1</span><pre>=VSTACK( Organic!A1:AL1,
+         FILTER(Organic!A2:AL, Organic!D2:D&lt;&gt;""),
+         FILTER(Ads!A2:AL, Ads!A2:A&lt;&gt;"") )</pre>Header row, then every organic row that has a Submission ID, then every ads row that has a name. One formula builds the whole tab, so <b>never type inside it</b>; fix the source rows instead.</div>`,
+ch:[
+ {id:"c20a", q:"In <code>mastersheet</code>, under the Email header: organic emails, then ads emails, in one list.", at:"mastersheet!A2", ref:'=VSTACK(registrations!E2:E15,ads_leads!D2:D9)', must:["VSTACK"], hint:"Email is column E in registrations, column D in ads_leads."},
+ {id:"c20b", type:"choice", q:"A name in the Master tab is wrong. Where do you fix it?", options:["Type over it in the Master tab","In the Organic or Ads tab, where the row comes from","Delete the VSTACK","In the Upload tab"], answer:1, explain:"The Master tab is one formula. Fix the source and it updates itself."}
+]});
+
+L.push({id:"l21", day:5, short:"ARRAYFORMULA", eyebrow:"Day 5 · one formula, whole column",
+title:"ARRAYFORMULA: write it once, fill the column",
+intro:`<p class="lede">Filling down works, but every new row from a form or automation lands with no formula. ARRAYFORMULA lets one formula in the top cell handle the whole column, including future rows.</p>
+<pre>=ARRAYFORMULA( B2:B15 &amp; " " &amp; C2:C15 )</pre>
+<p>Inside it, you give ranges where you'd normally give single cells. Try it without ARRAYFORMULA: you get one name (or an error), not fourteen, because a normal formula only fills its own cell.</p>
+<ul><li>Write it in row 2 only, and keep every cell below it empty.</li><li>Open-ended ranges like <code>B2:B</code> mean "to the bottom", so new rows are covered. Wrap the result in <code>IF(B2:B="", "", …)</code> so empty rows stay empty.</li><li>To change it, edit the top cell. Never type in the spilled cells.</li></ul>
+<div class="try">${T('=B2:B15&" "&C2:C15','registrations!J2')}${T('=ARRAYFORMULA(B2:B15&" "&C2:C15)','registrations!J2')}</div>
+<div class="real"><span class="lbl">In a real webinar sheet (Clean Phone)</span><pre>=ARRAYFORMULA(IF(H2:H="","",
+   IF(LEN(REGEXREPLACE(TO_TEXT(H2:H),"[^0-9]",""))=10,
+      "91"&amp;REGEXREPLACE(TO_TEXT(H2:H),"[^0-9]",""),
+      REGEXREPLACE(TO_TEXT(H2:H),"[^0-9]",""))))</pre>For every phone: strip everything that isn't a digit; if 10 digits remain, add 91 in front; empty stays empty.</div>`,
+ch:[
+ {id:"c21a", q:"Full names for all 14 registrations, with one formula in J2.", at:"registrations!J2", rows:14, ref:'=ARRAYFORMULA(B2:B15&" "&C2:C15)', must:["ARRAYFORMULA"], hint:"Your Day 1 formula with ranges, wrapped in ARRAYFORMULA."},
+ {id:"c21b", q:"The Attended Webinar column for all 14 rows, with one formula in J2. Priya must be <code>Yes</code>.", at:"registrations!J2", rows:14, ref:'=ARRAYFORMULA(IFERROR(VLOOKUP(TRIM(E2:E15),zoom!A:C,2,FALSE),"No"))', must:["ARRAYFORMULA","VLOOKUP"], hint:"Your Day 4 formula with E2:E15 instead of E2, wrapped in ARRAYFORMULA."}
+]});
+
+L.push({id:"l22", day:5, short:"Reading a real sheet", eyebrow:"Day 5 · a real-world sheet",
+title:"Reading a real-world webinar sheet",
+intro:`<p class="lede">You can now read almost every formula in a typical weekly webinar sheet. Here are the rest, decoded.</p>
+<div class="tablewrap"><table class="map"><thead><tr><th>Tab</th><th>Filled by</th></tr></thead><tbody>
+<tr><td><code>Organic</code></td><td>An automation that writes each form sign-up as a new row</td></tr>
+<tr><td><code>Ads</code></td><td><code>IMPORTRANGE</code> from the ad platform's leads sheet</td></tr>
+<tr><td><code>Master</code></td><td>One VSTACK of both</td></tr>
+<tr><td><code>Upload</code></td><td>Points at Master columns. This is what gets uploaded to the messaging tool for reminders.</td></tr>
+<tr><td><code>Pivot</code></td><td>Counts by source and attendance</td></tr>
+</tbody></table></div>
+<div class="real"><span class="lbl">IMPORTRANGE: pull a range from another file</span><pre>=IMPORTRANGE("https://docs.google.com/spreadsheets/d/…", "Leads!F2:F")</pre>The first time, it shows <code>#REF!</code> with an <b>Allow access</b> button. Click it once. If the source tab is renamed, it breaks.</div>
+<div class="real"><span class="lbl">DATEVALUE(LEFT(…)): timestamp to date</span><pre>=IF(Z2:Z&lt;&gt;"", DATEVALUE(LEFT(Z2:Z,10)), "")</pre>First 10 characters of the timestamp, turned into a real date you can sort and count by.</div>
+<div class="real"><span class="lbl">Upload tab</span><pre>=Master!B2:B
+=IF(A2:A&lt;&gt;"", "Y", "")</pre>Copies a Master column across, and flags every filled row Y.</div>
+<h2>House rules for the live sheet</h2>
+<ul><li>Click the top cell of a column and read the formula bar before you edit anything.</li><li>Never type into a spilled range or the Master tab.</li><li>Add helper columns at the far right, never in the middle (it shifts VLOOKUP column numbers).</li><li>Use filter views, not sort, on shared tabs.</li><li>Real lead data stays in the company Drive: no screenshots in groups, no personal downloads.</li></ul>`,
+ch:[
+ {id:"c22a", type:"choice", q:"Someone inserts a column between B and C in the Zoom tab. Which formula breaks silently?", options:["=XLOOKUP(I2, Zoom!A:A, Zoom!C:C)","=VLOOKUP(I2, Zoom!A:C, 2, 0)","=COUNTA(Zoom!A:A)","=FILTER(Zoom!A:A, Zoom!B:B=\"Yes\")"], answer:1, explain:"VLOOKUP's column number 2 now points at the new column. XLOOKUP's ranges move with the insert."},
+ {id:"c22b", type:"choice", q:"A new IMPORTRANGE shows #REF! the first time. What do you do?", options:["Rewrite the formula","Click Allow access","Copy the data by hand","Ask the automation tool to fix it"], answer:1, explain:"Each new pair of files needs permission once."},
+ {id:"c22c", type:"choice", q:"You need to see only WhatsApp registrations in the live shared sheet. What do you use?", options:["Sort the tab by utm_source","A filter view","Delete the other rows","A normal filter"], answer:1, explain:"A filter view changes only your screen. Sorting or filtering changes it for everyone."}
+]});
+
+L.push({id:"l23", day:5, short:"Final project", eyebrow:"Day 5 · in real Google Sheets",
+title:"Final project: build a mini webinar sheet",
+final:true,
+intro:`<p class="lede">Now put it together in your <code>sheets_practice</code> sheet, the way you will every week. Build a small version of a weekly webinar sheet, then answer the questions. The page checks your numbers.</p>
+<div class="why"><b>By hand.</b> You can ask AI to explain an error or a formula, but you type every formula yourself.</div>`,
+ch:[]});
+
+/* ---------- state ---------- */
+const KEY = "sheetslab:v2";
+let state = {solved:{}, steps:{}, answers:{}};
+try { const s = JSON.parse(localStorage.getItem(KEY)||"null"); if (s) state = Object.assign(state, s); } catch(e){}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e){} };
+const ALL_CH = L.flatMap(l => l.ch.map(c => c.id));
+let current = 0;
+let lastInput = null;
+
+/* ---------- formula engine ---------- */
+const HFG = window.HyperFormula && (window.HyperFormula.HyperFormula || window.HyperFormula);
+function fixSort(s){
+  let out = "", i = 0;
+  while (i < s.length){
+    if (s[i] === '"'){ const j = s.indexOf('"', i+1); const k = j < 0 ? s.length : j+1; out += s.slice(i,k); i = k; continue; }
+    const m = /^SORT\s*\(/i.exec(s.slice(i));
+    if (m && !/[A-Za-z_.]/.test(s[i-1]||"")){
+      let depth = 1, j = i + m[0].length, start = j, inQ = false; const args = [];
+      for (; j < s.length; j++){ const c = s[j];
+        if (c === '"'){ inQ = !inQ; continue; } if (inQ) continue;
+        if (c === '(' || c === '{') depth++;
+        else if (c === ')' || c === '}'){ depth--; if (depth === 0) break; }
+        else if (c === ',' && depth === 1){ args.push(s.slice(start,j)); start = j+1; }
+      }
+      args.push(s.slice(start,j));
+      const fixed = args.map((a,k) => { a = fixSort(a); if (k >= 2 && k % 2 === 0){ const t = a.trim().toUpperCase(); if (t === "FALSE()" || t === "0") return "-1"; if (t === "TRUE()") return "1"; } return a; });
+      out += m[0] + fixed.join(",") + (j < s.length ? ")" : ""); i = j+1; continue;
+    }
+    out += s[i]; i++;
+  }
+  return out;
+}
+function prep(f){
+  const s = f.split(/("[^"]*")/).map((s,i) => i%2 ? s :
+    s.replace(/\b(TRUE|FALSE)\b(?!\s*\()/gi, m => m.toUpperCase()+"()")
+     .replace(/(\$?[A-Za-z]{1,3}\$?\d+\s*:\s*\$?[A-Za-z]{1,3})(?![A-Za-z0-9$(!_])/g, "$1"+"60")
+  ).join("");
+  return fixSort(s);
+}
+const ERR = {
+  NA:["#N/A","Not found. The lookup didn't find the key, or FILTER found no rows. Check spaces in the key."],
+  NAME:["#NAME?","Unknown name: a misspelled function, or text missing its \"quotes\"."],
+  REF:["#REF!","Points at something that doesn't exist: a wrong tab name, or a column number bigger than the range."],
+  VALUE:["#VALUE!","Wrong kind of input. Often a range was given where one value is expected. Did you need ARRAYFORMULA?"],
+  DIV_BY_ZERO:["#DIV/0!","Divided by zero, or by an empty cell."],
+  ERROR:["#ERROR!","The formula couldn't be read. Check brackets ( ), commas and \"quotes\"."],
+  NUM:["#NUM!","A number problem, such as an impossible calculation."],
+  CYCLE:["#REF!","The formula refers to its own cell."],
+  SPILL:["#REF!","The result needs empty cells to spill into, and something is in the way."]
+};
+function buildSheets(){
+  const sheets = {};
+  DATA_TABS.forEach(t => sheets[t] = DATA[t].map(r => r.map(c => c === "" ? null : c)));
+  Object.keys(EXTRA).forEach(t => sheets[t] = EXTRA[t].map(r => r.slice()));
+  return sheets;
+}
+function newEngine(){ return HFG.buildFromSheets(buildSheets(), {licenseKey:"gpl-v3", useArrayArithmetic:false}); }
+const unwrap = c => (c && typeof c === "object" && c.type) ? {err:c.type} : c;
+let BASE = null;
+function baseValues(){
+  if (BASE) return BASE;
+  BASE = {};
+  if (!HFG){ TABS.forEach(t => BASE[t] = (DATA[t]||EXTRA[t])); return BASE; }
+  const hf = newEngine();
+  TABS.forEach(t => BASE[t] = hf.getSheetValues(hf.getSheetId(t)).map(r => r.map(unwrap)));
+  hf.destroy();
+  return BASE;
+}
+function parseAt(at){ const m = /^([A-Za-z_]+)!([A-Z]+)(\d+)$/.exec(at); let col = 0; for (const ch of m[2]) col = col*26 + ch.charCodeAt(0)-64; return {tab:m[1], col:col-1, row:+m[3]-1}; }
+const eqCell = (a,b) => { const n = v => (v === undefined || v === "" ? null : v); a = n(a); b = n(b); if (a && a.err || b && b.err) return JSON.stringify(a) === JSON.stringify(b); return a === b; };
+function evaluate(formula, at, fill){
+  let f = (formula||"").trim();
+  if (!f) return {empty:true};
+  if (f[0] !== "=") return {msg:"Formulas start with =. Add = at the front."};
+  if (!HFG) return {msg:"The formula engine didn't load. Check your connection and reload the page."};
+  const t = parseAt(at);
+  let hf;
+  try {
+    hf = newEngine();
+    const sid = hf.getSheetId(t.tab), a = {sheet:sid, col:t.col, row:t.row};
+    hf.setCellContents(a, [[prep(f)]]);
+    if (fill && fill-1 > t.row){ hf.copy({start:a, end:a}); for (let r = t.row+1; r <= fill-1; r++) hf.paste({sheet:sid, col:t.col, row:r}); }
+    const vals = hf.getSheetValues(sid).map(r => r.map(unwrap));
+    const base = baseValues()[t.tab];
+    let maxR = t.row, maxC = t.col; const changed = new Set([t.row+","+t.col]);
+    vals.forEach((row,r) => row.forEach((c,ci) => { const b = (base[r]||[])[ci]; if (!eqCell(c,b)){ changed.add(r+","+ci); if (r >= t.row && ci >= t.col){ maxR = Math.max(maxR,r); maxC = Math.max(maxC,ci); } } }));
+    const grid = [];
+    for (let r = t.row; r <= maxR; r++){ const row = []; for (let c = t.col; c <= maxC; c++) row.push((vals[r]||[])[c] ?? null); grid.push(row); }
+    const firstErr = grid.flat().find(c => c && c.err);
+    return {grid, err:firstErr ? firstErr.err : null, tab:t.tab, vals, changed, at:t};
+  } catch(e) {
+    return {grid:[[{err:"VALUE"}]], err:"VALUE", tab:t.tab, vals:null, changed:new Set(), at:t};
+  } finally { try { hf && hf.destroy(); } catch(e){} }
+}
+function norm(grid, rows){
+  if (!grid) return [];
+  let g = grid.map(r => r.map(c => {
+    if (c === null || c === undefined) return null;
+    if (typeof c === "string" && c.trim() === "") return null;
+    if (typeof c === "number") return Math.round(c*1e6)/1e6;
+    if (c && c.err) return "#"+c.err;
+    return c;
+  }));
+  if (rows) g = g.slice(0, rows);
+  while (g.length && g[g.length-1].every(c => c === null)) g.pop();
+  const w = Math.max(0, ...g.map(r => { let i = r.length; while (i>0 && r[i-1]===null) i--; return i; }));
+  return g.map(r => { const x = r.slice(0,w); while (x.length<w) x.push(null); return x; });
+}
+const same = (a,b) => JSON.stringify(a) === JSON.stringify(b);
+
+/* ---------- rendering helpers ---------- */
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const colName = i => { let s=""; i++; while(i>0){ const m=(i-1)%26; s=String.fromCharCode(65+m)+s; i=Math.floor((i-1)/26);} return s; };
+function cellText(c){
+  if (c === null || c === undefined) return "";
+  if (c && c.err) return (ERR[c.err]||["#"+c.err])[0];
+  if (typeof c === "boolean") return c ? "TRUE" : "FALSE";
+  if (typeof c === "number") return String(Math.round(c*1e6)/1e6);
+  return String(c);
+}
+function sheetTable(rows, o){
+  o = o || {};
+  const r0 = o.r0||0, c0 = o.c0||0;
+  const w = Math.max(1, ...rows.map(r => r.length));
+  let h = `<table class="sheet ${o.hdr?'hdr':''}"><thead><tr><th></th>`;
+  for (let i=0;i<w;i++) h += `<th data-col="${colName(c0+i)}">${colName(c0+i)}</th>`;
+  h += '</tr></thead><tbody>';
+  rows.forEach((r,ri) => {
+    h += `<tr><th>${r0+ri+1}</th>`;
+    for (let i=0;i<w;i++){ const c = r[i], t = cellText(c), key = (r0+ri)+","+(c0+i);
+      const cls = [c&&c.err?'err':'', typeof c==="number"?'num':'', o.changed&&o.changed.has(key)?'new':'', o.target===key?'target':''].join(" ");
+      h += `<td data-ref="${colName(c0+i)}${r0+ri+1}" class="${cls}" title="${esc(t)}">${esc(t)}</td>`; }
+    h += '</tr>';
+  });
+  return h + '</tbody></table>';
+}
+function outputHTML(res){
+  if (!res || res.empty) return "";
+  if (res.msg) return `<div class="fb bad">${esc(res.msg)}</div>`;
+  let h = `<div class="out"><div class="grid">${sheetTable(res.grid.length?res.grid:[[""]], {r0:res.at.row, c0:res.at.col})}</div></div>`;
+  if (res.err) { const e = ERR[res.err]||["#"+res.err,""]; h += `<div class="fb bad"><b>${e[0]}</b> ${esc(e[1])}</div>`; }
+  return h;
+}
+
+/* ---------- workbook panel ---------- */
+let activeTab = "registrations";
+let lastRun = null;
+function freeCell(tab){ const b = baseValues()[tab]; const w = Math.max(...b.map(r => r.length)); return `${tab}!${colName(w + (tab==="summary"?1:0))}2`; }
+let scratchAt = freeCell("registrations");
+function renderTabs(){
+  document.getElementById("tabs").innerHTML = TABS.map(n => `<button role="tab" aria-selected="${n===activeTab}" data-tab="${n}">${n}</button>`).join("");
+  renderSheet();
+}
+function renderSheet(){
+  const showRun = lastRun && lastRun.tab === activeTab && lastRun.vals;
+  const vals = showRun ? lastRun.vals : baseValues()[activeTab];
+  const minRows = vals.length, w = Math.max(...vals.map(r => r.length));
+  const padded = vals.map(r => { const x = r.slice(); while (x.length < w+1) x.push(null); return x; });
+  document.getElementById("sheetView").innerHTML = sheetTable(padded, {hdr:true, changed: showRun ? lastRun.changed : null, target: showRun ? lastRun.at.row+","+lastRun.at.col : null});
+  document.getElementById("scratchAt").textContent = scratchAt;
+}
+function setTab(t){ if (t && t !== activeTab && TABS.includes(t)){ activeTab = t; if (!scratchAt.startsWith(t+"!")) scratchAt = freeCell(t); renderTabs(); } }
+document.getElementById("tabs").addEventListener("click", e => {
+  const b = e.target.closest("button[data-tab]"); if (!b) return;
+  activeTab = b.dataset.tab; scratchAt = freeCell(activeTab); renderTabs();
+});
+const inputTab = inp => (inp.dataset.at || scratchAt).split("!")[0];
+let lastIns = null;
+function insertRef(cell, shift){
+  const inp = (lastInput && document.body.contains(lastInput)) ? lastInput : document.getElementById("scratchIn");
+  const prefix = inputTab(inp) === activeTab ? "" : activeTab + "!";
+  if (shift && lastIns && lastIns.inp === inp && lastIns.tab === activeTab && inp.value.substr(lastIns.start, lastIns.text.length) === lastIns.text && !lastIns.text.includes(":")){
+    const text = prefix + lastIns.cell + ":" + cell;
+    inp.value = inp.value.slice(0,lastIns.start) + text + inp.value.slice(lastIns.start + lastIns.text.length);
+    lastIns = {inp, start:lastIns.start, text, tab:activeTab, cell};
+    inp.focus(); const p = lastIns.start + text.length; inp.setSelectionRange(p,p); return;
+  }
+  const v = inp.value, s = inp.selectionStart ?? v.length, e = inp.selectionEnd ?? v.length;
+  let text = prefix + cell, lead = v.trim() ? "" : "=";
+  inp.value = v.slice(0,s) + lead + text + v.slice(e);
+  lastIns = {inp, start:s+lead.length, text, tab:activeTab, cell};
+  inp.focus(); const p = s + lead.length + text.length; inp.setSelectionRange(p,p);
+}
+document.getElementById("sheetView").addEventListener("click", e => {
+  const td = e.target.closest("td[data-ref]");
+  if (td){
+    const showRun = lastRun && lastRun.tab === activeTab && lastRun.vals;
+    insertRef(td.dataset.ref, e.shiftKey); td.classList.add("flash"); setTimeout(()=>td.classList.remove("flash"),400);
+    const st = document.getElementById("wbStatus"), f = cellFormula(activeTab, td.dataset.ref);
+    st.innerHTML = `<b>${activeTab}!${td.dataset.ref}</b> ${f ? "· formula: <b>"+esc(f)+"</b>" : ""}`;
+    return;
+  }
+  const th = e.target.closest("thead th[data-col]");
+  if (th){ const c = th.dataset.col; insertRef(`${c}:${c}`.replace(/^/, ""), false); }
+});
+function cellFormula(tab, ref){
+  if (!EXTRA[tab]) return null;
+  const p = parseAt(tab+"!"+ref); const v = (EXTRA[tab][p.row]||[])[p.col];
+  return (typeof v === "string" && v[0] === "=") ? v : null;
+}
+document.addEventListener("focusin", e => {
+  if (e.target.matches && e.target.matches("input.formula")){ lastInput = e.target; if (e.target.dataset.at) setTab(e.target.dataset.at.split("!")[0]); }
+});
+const scratchIn = document.getElementById("scratchIn");
+function runScratch(){
+  const res = evaluate(scratchIn.value, scratchAt);
+  document.getElementById("scratchOut").innerHTML = res.empty ? "" : (res.msg ? outputHTML(res) : (res.err ? `<div class="fb bad"><b>${(ERR[res.err]||["#"+res.err])[0]}</b> ${esc((ERR[res.err]||["",""])[1])}</div>` : `<div class="fb ok">Done. Result shown in green in the grid.</div>`));
+  if (res.vals){ lastRun = res; setTab(res.tab); renderSheet(); }
+}
+document.getElementById("scratchRun").addEventListener("click", runScratch);
+document.getElementById("scratchClear").addEventListener("click", () => { scratchIn.value=""; document.getElementById("scratchOut").innerHTML=""; lastRun = null; renderSheet(); scratchIn.focus(); });
+scratchIn.addEventListener("keydown", e => { if (e.key==="Enter"){ e.preventDefault(); runScratch(); } });
+
+/* ---------- lessons ---------- */
+const lessonCount = l => l.final ? FINAL.length : l.ch.length;
+const lessonSolved = l => l.final ? FINAL.filter(q => state.answers[q.id] && state.answers[q.id].ok).length : l.ch.filter(c => state.solved[c.id]).length;
+function renderNav(){
+  let html = "", day = 0;
+  L.forEach((l,i) => {
+    if (l.day !== day){ day = l.day; html += `<li class="day">Day ${day}</li>`; }
+    const n = lessonSolved(l), tot = lessonCount(l), done = n === tot;
+    html += `<li><a href="#${l.id}" ${i===current?'aria-current="page"':''}><span class="n">${String(i+1).padStart(2,"0")}</span><span class="lt">${esc(l.short)}</span><span class="tick ${done?'done':''}">${done?'✓':n+'/'+tot}</span></a></li>`;
+  });
+  document.getElementById("nav").innerHTML = html;
+  const solved = L.reduce((s,l) => s + lessonSolved(l), 0), total = L.reduce((s,l) => s + lessonCount(l), 0);
+  document.getElementById("progText").textContent = `${solved} of ${total} done`;
+  document.getElementById("progBar").style.width = (solved/total*100)+"%";
+}
+function chHTML(c, idx){
+  const solved = !!state.solved[c.id];
+  if (c.type === "choice"){
+    return `<div class="ch ${solved?'solved':''}" data-id="${c.id}"><div class="ch-head"><span class="ch-num">${solved?'✓':'Q'+(idx+1)}</span><p class="ch-q">${c.q}</p></div>
+      <div class="choices">${c.options.map((o,i)=>`<label><input type="radio" name="${c.id}" value="${i}" ${solved&&i===c.answer?'checked':''}> ${esc(o)}</label>`).join("")}</div>
+      <div class="fb ${solved?'ok':''}" data-fb>${solved?'Correct. '+c.explain:''}</div></div>`;
+  }
+  if (c.type === "task"){
+    return `<div class="ch task ${solved?'solved':''}" data-id="${c.id}"><div class="ch-head"><span class="ch-num">${solved?'✓':'In Sheets'}</span><p class="ch-q"><b>${c.q}</b></p></div>
+      <ol>${c.steps.map(s=>`<li>${s}</li>`).join("")}</ol>
+      <label class="done"><input type="checkbox" data-task ${solved?'checked':''}> Done in my sheet</label></div>`;
+  }
+  const saved = (state.solved[c.id] && state.solved[c.id].f) || "";
+  const fillTxt = c.fill ? ` · fills down to row ${c.fill}` : "";
+  return `<div class="ch ${solved?'solved':''}" data-id="${c.id}"><div class="ch-head"><span class="ch-num">${solved?'✓':'Ex '+(idx+1)}</span><p class="ch-q">${c.q}</p></div>
+    <div class="where">Type in <b>${c.at}</b>${fillTxt}</div>
+    <div class="fbar"><span class="fx">fx</span><input class="formula" data-at="${c.at}" spellcheck="false" autocomplete="off" id="in-${c.id}" value="${esc(saved)}" placeholder="=" aria-label="Your formula for ${c.at}"></div>
+    <div class="actions"><button class="btn primary small" data-check>Check</button><button class="btn small" data-hint>Hint</button><button class="btn small" data-show>Show answer</button></div>
+    <div data-fb></div><div class="hint" data-hintbox hidden>${c.hint||""}</div></div>`;
+}
+function renderLesson(i){
+  current = Math.max(0, Math.min(L.length-1, i));
+  const l = L[current];
+  document.getElementById("intro").innerHTML = `<p class="eyebrow">${esc(l.eyebrow)}</p><h1>${esc(l.title)}</h1>${l.intro}`;
+  let p = l.final ? finalHTML() : `<h2>Your turn</h2><p class="sub">Click into a formula box: the workbook jumps to that tab. Click cells to insert addresses. Any formula that gives the right result counts.</p>` + l.ch.map(chHTML).join("");
+  const prev = current>0 ? `<a class="btn" href="#${L[current-1].id}">← ${esc(L[current-1].short)}</a>` : "<span></span>";
+  const next = current<L.length-1 ? `<a class="btn primary" href="#${L[current+1].id}">${esc(L[current+1].short)} →</a>` : "";
+  p += `<div class="navbtns">${prev}${next}</div>`;
+  document.getElementById("practice").innerHTML = p;
+  if (document.getElementById("copyRow")) wireCopy();
+  if (l.final) wireFinal();
+  const firstAt = l.ch.find(c => c.at); if (firstAt){ setTab(firstAt.at.split("!")[0]); }
+  renderNav();
+}
+function findCh(id){ for (const l of L) for (const c of l.ch) if (c.id===id) return c; }
+function checkCh(box){
+  const c = findCh(box.dataset.id), fb = box.querySelector("[data-fb]");
+  const f = box.querySelector("input.formula").value;
+  const res = evaluate(f, c.at, c.fill);
+  if (res.empty){ fb.innerHTML = `<div class="fb bad">Type a formula first.</div>`; return; }
+  if (res.msg){ fb.innerHTML = outputHTML(res); return; }
+  lastRun = res; setTab(res.tab); renderSheet();
+  const exp = evaluate(c.ref, c.at, c.fill);
+  const ok = same(norm(res.grid, c.rows), norm(exp.grid, c.rows));
+  const missing = (c.must||[]).filter(fn => !new RegExp("\\b"+fn+"\\s*\\(","i").test(f));
+  const banned = (c.ban||[]).filter(fn => new RegExp("\\b"+fn+"\\s*\\(","i").test(f));
+  let msg;
+  if (ok && !missing.length && !banned.length){
+    state.solved[c.id] = {f}; save();
+    box.classList.add("solved"); box.querySelector(".ch-num").textContent = "✓";
+    msg = `<div class="fb ok"><b>Correct.</b>${c.explain?" "+c.explain:""} <span class="note">Reference answer: <code>${esc(c.ref)}</code></span></div>`;
+    renderNav();
+  } else if (ok){
+    msg = `<div class="fb bad">Right result, but this exercise is about ${missing.length?missing.join(" + "):"not using "+banned.join(", ")}. Try it that way.</div>`;
+  } else if (res.err && !exp.err){
+    msg = "";
+  } else {
+    msg = `<div class="fb bad">Not quite. Compare your result (green in the grid) with what the question asks.</div>`;
+  }
+  const errNote = res.err ? (() => { const e = ERR[res.err]||["#"+res.err,""]; return `<div class="fb ${ok?'':'bad'}"><b>${e[0]}</b> ${esc(e[1])}</div>`; })() : "";
+  fb.innerHTML = `<div class="out"><div class="grid">${sheetTable(res.grid.length?res.grid:[[""]], {r0:res.at.row, c0:res.at.col})}</div></div>` + (ok ? "" : errNote) + msg;
+}
+const practice = document.getElementById("practice");
+practice.addEventListener("click", e => {
+  const box = e.target.closest(".ch"); if (!box) return;
+  if (e.target.matches("[data-check]")) checkCh(box);
+  if (e.target.matches("[data-hint]")) { const h = box.querySelector("[data-hintbox]"); h.hidden = !h.hidden; }
+  if (e.target.matches("[data-show]")) {
+    const c = findCh(box.dataset.id); const h = box.querySelector("[data-hintbox]");
+    h.hidden = false; h.innerHTML = `${c.hint||""}<br><b>One answer:</b> <code>${esc(c.ref)}</code>. Type it in yourself and press Check.`;
+  }
+});
+practice.addEventListener("change", e => {
+  const box = e.target.closest(".ch"); if (!box) return;
+  const c = findCh(box.dataset.id);
+  if (e.target.matches("[data-task]")){
+    if (e.target.checked){ state.solved[c.id] = {f:"task"}; box.classList.add("solved"); box.querySelector(".ch-num").textContent = "✓"; }
+    else { delete state.solved[c.id]; box.classList.remove("solved"); box.querySelector(".ch-num").textContent = "In Sheets"; }
+    save(); renderNav(); return;
+  }
+  if (!e.target.matches('.choices input')) return;
+  const fb = box.querySelector("[data-fb]");
+  if (+e.target.value === c.answer){
+    state.solved[c.id] = {f:"choice"}; save(); box.classList.add("solved"); box.querySelector(".ch-num").textContent="✓";
+    fb.className = "fb ok"; fb.textContent = "Correct. " + c.explain; renderNav();
+  } else { fb.className = "fb bad"; fb.textContent = "Not that one. Think about it again."; }
+});
+practice.addEventListener("keydown", e => {
+  if (e.key === "Enter" && e.target.matches("input.formula")) { e.preventDefault(); checkCh(e.target.closest(".ch")); }
+});
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-try]"); if (!b) return;
+  scratchIn.value = b.dataset.try; scratchAt = b.dataset.at; setTab(scratchAt.split("!")[0]); runScratch();
+  if (window.innerWidth < 1200) document.querySelector("aside.data").scrollIntoView({behavior:"smooth", block:"start"});
+});
+
+/* ---------- copy tabs, final project ---------- */
+function tsv(rows){ return rows.map(r => r.map(c => String(c).replace(/[\t\n]/g," ")).join("\t")).join("\n"); }
+function copyText(text, onDone){
+  try { navigator.clipboard.writeText(text).then(()=>onDone(true), ()=>onDone(false)); } catch(e){ onDone(false); }
+}
+function wireCopy(){
+  const row = document.getElementById("copyRow");
+  row.innerHTML = DATA_TABS.map(t => `<button class="btn" data-copytab="${t}">Copy ${t}</button>`).join("");
+  row.addEventListener("click", e => {
+    const b = e.target.closest("[data-copytab]"); if (!b) return;
+    const t = b.dataset.copytab, msg = document.getElementById("copyMsg");
+    copyText(tsv(DATA[t]), ok => { msg.textContent = ok ? `Copied ${t}. Click A1 in your ${t} tab and paste (Ctrl+V).` : `Copy was blocked here. Open the ${t} tab in the workbook, drag to select the cells, and copy them instead.`; });
+  });
+}
+const STEPS = [
+  "In <code>registrations</code>, from column J: <b>Full Name</b>, <b>Clean Email</b>, <b>International Lead</b>, <b>Attended Webinar</b>, <b>Time in Session</b>. Use one ARRAYFORMULA per column.",
+  "In <code>ads_leads</code>, from column G: <b>Experience (clean)</b> with SUBSTITUTE, <b>Persona</b> with XLOOKUP, <b>Attended Webinar</b>.",
+  "In <code>ad_spend</code>: a <b>CPL</b> column with IFERROR, and a <b>Share of spend</b> column with $.",
+  "New tab <code>mastersheet</code>: header <code>Email</code> in A1, then one VSTACK in A2 that stacks the cleaned emails of both tabs.",
+  "New tab <code>summary</code>: one formula per question below (COUNTA, UNIQUE, COUNTIF, FILTER, AVERAGE). No typed numbers.",
+  "Highlight duplicate emails in mastersheet with conditional formatting.",
+  "Share the sheet with your reviewer (Viewer is enough)."
+];
+function finalHTML(){
+  return `<h2>1 · Build it</h2><ul class="steps">${STEPS.map((s,i)=>`<li><input type="checkbox" id="st${i}" ${state.steps["st"+i]?'checked':''}><label for="st${i}">${s}</label></li>`).join("")}</ul>
+  <h2>2 · Answer from your summary tab</h2><p class="sub">Type the number your sheet shows and press Check. The data is messy on purpose (a duplicate, a badly typed email, someone in both tabs, someone who joined without registering), so the right numbers only come out if you clean before you count.</p>
+  ${FINAL.map((q,i)=>{const a=state.answers[q.id]||{}; return `<div class="ans" data-q="${q.id}"><label for="ans-${q.id}">${i+1}. ${esc(q.q)}</label><input id="ans-${q.id}" inputmode="decimal" value="${esc(a.v||"")}"><span class="res ${a.ok?'ok':(a.v?'bad':'')}">${a.ok?'✓ Right':(a.v?'Check again':'')}</span></div>`}).join("")}
+  <div class="actions" style="margin-top:12px"><button class="btn primary" id="checkAll">Check answers</button></div>
+  <h2>3 · Send your reviewer</h2><p>The link to your sheet, plus this summary:</p>
+  <div class="actions"><button class="btn" id="copySummary">Copy my summary</button></div><pre id="summary" style="margin-top:10px"></pre>`;
+}
+function summaryText(){
+  const lines = [`Sheets Lab: my progress`];
+  [1,2,3,4,5].forEach(d => { const ls = L.filter(l => l.day === d && !l.final); const s = ls.reduce((a,l)=>a+lessonSolved(l),0), t = ls.reduce((a,l)=>a+lessonCount(l),0); lines.push(`Day ${d}: ${s}/${t}`); });
+  lines.push(`Final project answers:`);
+  FINAL.forEach((q,i) => { const a = state.answers[q.id]||{}; lines.push(`  Q${i+1}: ${a.v||"-"} ${a.ok?"(right)":a.v?"(not yet)":""}`); });
+  lines.push(`Build steps ticked: ${STEPS.filter((s,i)=>state.steps["st"+i]).length} of ${STEPS.length}`);
+  return lines.join("\n");
+}
+function wireFinal(){
+  document.querySelectorAll(".steps input").forEach(cb => cb.addEventListener("change", () => { state.steps[cb.id] = cb.checked; save(); }));
+  document.getElementById("checkAll").addEventListener("click", () => {
+    FINAL.forEach(q => {
+      const row = document.querySelector(`.ans[data-q="${q.id}"]`), v = row.querySelector("input").value.trim().replace("%","");
+      const ok = v !== "" && Math.abs(parseFloat(v) - q.a) < 0.051;
+      state.answers[q.id] = {v, ok};
+      const r = row.querySelector(".res"); r.className = "res " + (ok?"ok":(v?"bad":"")); r.textContent = ok ? "✓ Right" : (v ? "Check again" : "");
+    });
+    save(); renderNav(); document.getElementById("summary").textContent = summaryText();
+  });
+  document.getElementById("summary").textContent = summaryText();
+  document.getElementById("copySummary").addEventListener("click", () => {
+    const t = summaryText(); document.getElementById("summary").textContent = t;
+    copyText(t, ok => { document.getElementById("copySummary").textContent = ok ? "Copied" : "Select the text below and copy it"; });
+  });
+}
+
+/* ---------- routing ---------- */
+function fromHash(){ const id = (location.hash||"").slice(1); const i = L.findIndex(l => l.id === id); return i < 0 ? 0 : i; }
+window.addEventListener("hashchange", () => { const i = fromHash(); if (i !== current) renderLesson(i); });
+document.addEventListener("click", e => {
+  const a = e.target.closest('a[href^="#"]'); if (!a) return;
+  const i = L.findIndex(l => "#"+l.id === a.getAttribute("href")); if (i < 0) return;
+  e.preventDefault(); renderLesson(i);
+  try { history.replaceState(null, "", "#"+L[i].id); } catch(err){}
+  window.scrollTo({top:0});
+});
+renderTabs();
+renderLesson(fromHash());
+if (!HFG) document.getElementById("scratchOut").innerHTML = `<div class="fb bad">The formula engine didn't load. Reload the page.</div>`;
+})();
+</script>
+</body>
+</html>
