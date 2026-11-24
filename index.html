@@ -287,6 +287,21 @@ aside.data.expanded .wb{height:100%;box-shadow:var(--shadow)}
       <tr><th>Formula</th><td>An instruction that starts with <code>=</code>, like <code>=B2+C2</code>. The cell shows its answer.</td></tr>
       <tr><th>Function</th><td>A ready-made calculation with a name, like <code>SUM</code> or <code>COUNTIF</code>.</td></tr>
     </tbody></table></div>
+    <h2>Webinar and ads words</h2>
+    <p>The practice data is about a company that runs a free online class and advertises it. These words come up a lot:</p>
+    <div class="tablewrap"><table class="map"><tbody>
+      <tr><th>Webinar</th><td>A free online class or talk, here run on Zoom.</td></tr>
+      <tr><th>Sign-up</th><td>Someone filling in a form to join the webinar. Also called a registration.</td></tr>
+      <tr><th>Lead</th><td>A person who signed up: someone interested who might buy something later.</td></tr>
+      <tr><th>Organic</th><td>A sign-up that didn't come from a paid ad, for example from the company's website or a shared link.</td></tr>
+      <tr><th>Ad set</th><td>A group of ads shown to the same kind of people.</td></tr>
+      <tr><th>Spend</th><td>How much money was paid for an ad, in rupees (₹).</td></tr>
+      <tr><th>Cost per lead (CPL)</th><td>How much each sign-up from an ad cost: <b>spend ÷ leads</b>. Lower is better.</td></tr>
+      <tr><th>utm_source</th><td>Where a person came from, like whatsapp or instagram.</td></tr>
+      <tr><th>Persona</th><td>A group name for similar people, like Developer or Student.</td></tr>
+      <tr><th>Attended</th><td>Whether a person actually joined the webinar. Time in session is how many minutes they stayed.</td></tr>
+      <tr><th>CRM</th><td>The software a sales team uses to keep track of every lead and every call.</td></tr>
+    </tbody></table></div>
   </div>
   <div class="welcome-foot"><button class="btn primary" data-close>Start learning</button></div>
 </dialog>
@@ -422,9 +437,9 @@ const FINAL = (function(){
     {id:"q1", q:"How many registration rows are there in total (organic + ads)?", a: org.length+ads.length},
     {id:"q2", q:"How many unique people registered? Match on cleaned email.", a: regEmails.size},
     {id:"q3", q:"How many of those unique people attended?", a: attended.length},
-    {id:"q4", q:"Attendance %: attended ÷ unique people × 100.", a: Math.round(attended.length/regEmails.size*1000)/10},
-    {id:"q5", q:"How many Meta Ads leads did NOT attend? This is your replay WhatsApp list.", a: adsNo.size},
-    {id:"q6", q:"Average minutes in session for attendees who registered (1 decimal).", a: Math.round(avg*10)/10},
+    {id:"q4", q:"Attendance %: of the unique people who signed up, what percent came? Attended ÷ unique people × 100.", a: Math.round(attended.length/regEmails.size*1000)/10},
+    {id:"q5", q:"How many people who signed up through ads did NOT come? These people get the recording (the replay) on WhatsApp.", a: adsNo.size},
+    {id:"q6", q:"Average minutes stayed, for people who signed up and came. Round to 1 decimal place.", a: Math.round(avg*10)/10},
     {id:"q7", q:"How many people joined Zoom without registering?", a: zm.filter(r=>!regEmails.has(clean(r[0]))).length}
   ];
 })();
@@ -437,6 +452,10 @@ const L = [];
 L.push({id:"l1", day:1, short:"What a sheet really is",
 title:"A Google Sheet is a small database",
 intro:`<p class="lede">A Google Sheet looks like a grid of boxes. It helps to think of it as a small database: a tidy store of information that you can ask questions. Every formula in this course is a way of asking a question, like "how many people signed up?" or "did this person come to the webinar?".</p>
+<h2>The story behind the practice data</h2>
+<p>Every exercise uses the same made-up example. A company runs a free online class on Zoom, called a <b>webinar</b>. People sign up for it in two ways:</p>
+<ul><li>On the company's website, by filling in a form. These are <b>organic</b> sign-ups: nobody paid for an ad to bring them.</li><li>By seeing an <b>ad</b> on Facebook or Instagram and filling in a form there. The company pays for these ads.</li></ul>
+<p>A person who signs up is called a <b>lead</b>: someone who has shown interest and might buy something later. After the webinar, the team wants to know how many people signed up, how many actually came, and how much money each sign-up from ads cost. You'll work all of that out with formulas.</p>
 <h2>The parts of a sheet</h2>
 <div class="tablewrap"><table class="map"><thead><tr><th>Name</th><th>What it is</th><th>Example in this course</th></tr></thead><tbody>
 <tr><td>Tab</td><td>One page of the spreadsheet, holding one table of information. In Google Sheets the tabs are along the bottom; in the practice workbook they're along the top.</td><td><code>registrations</code>, <code>zoom</code></td></tr>
@@ -450,7 +469,19 @@ intro:`<p class="lede">A Google Sheet looks like a grid of boxes. It helps to th
 <ul><li>One header row at the very top, with nothing above it.</li><li>One person or thing per row, and no empty rows in the middle.</li><li>One kind of information per column. Don't mix phone numbers and emails in one column.</li><li>Don't merge cells inside the data.</li><li>Never type over a cell that has a formula in it.</li></ul>
 <h2>Meet the practice workbook</h2>
 <p>The practice workbook (on the right, or behind the <b>Show workbook</b> button on a phone) is a mini Google Sheet with made-up data about a webinar. Click the tab names along its top to look around:</p>
-<ul><li><code>registrations</code>: people who signed up through the website form</li><li><code>ads_leads</code>: people who signed up through Facebook and Instagram ads</li><li><code>zoom</code>: who came to the webinar, and for how many minutes</li><li><code>persona_map</code>: a short list that sorts job titles into groups</li><li><code>ad_spend</code>: what each ad cost and how many sign-ups it brought</li><li><code>summary</code> and <code>mastersheet</code>: mostly empty. You'll fill them in.</li></ul>`,
+<ul><li><code>registrations</code>: people who signed up through the website form</li><li><code>ads_leads</code>: people who signed up through Facebook and Instagram ads</li><li><code>zoom</code>: who came to the webinar, and for how many minutes</li><li><code>persona_map</code>: a short list that sorts job titles into groups</li><li><code>ad_spend</code>: what each ad cost and how many sign-ups it brought</li><li><code>summary</code> and <code>mastersheet</code>: mostly empty. You'll fill them in.</li></ul>
+<h2>Columns that need explaining</h2>
+<p>Most column names say what they hold, like First Name or Phone Number. These ones are less obvious:</p>
+<div class="tablewrap"><table class="map"><thead><tr><th>Column</th><th>Tab</th><th>What it means</th></tr></thead><tbody>
+<tr><td><code>utm_source</code></td><td>registrations</td><td>Where the person came from, for example <code>whatsapp</code> if they clicked a link shared on WhatsApp. Empty means nobody knows.</td></tr>
+<tr><td><code>Submitted at</code></td><td>registrations</td><td>The date and time they signed up</td></tr>
+<tr><td><code>Time in Session (min)</code></td><td>zoom</td><td>How many minutes they stayed in the webinar</td></tr>
+<tr><td><code>Persona</code></td><td>persona_map</td><td>A group name for similar people, like Developer or Student</td></tr>
+<tr><td><code>Ad Set</code></td><td>ad_spend</td><td>A group of ads shown to the same kind of people: <code>broad</code> = anyone, <code>interests</code> = people interested in related topics, <code>retarget</code> = people who visited the website before</td></tr>
+<tr><td><code>Platform</code></td><td>ad_spend</td><td>Where the ad ran: <code>ig</code> = Instagram, <code>fb</code> = Facebook</td></tr>
+<tr><td><code>Spend (₹)</code></td><td>ad_spend</td><td>How much money was paid for that ad, in rupees</td></tr>
+<tr><td><code>Leads</code></td><td>ad_spend</td><td>How many people signed up from that ad</td></tr>
+</tbody></table></div>`,
 todo:`<p>Click through the tabs in the practice workbook, then answer the three questions below. Pick an answer and you'll see straight away if it's right.</p>`,
 ch:[
  {id:"c1a", type:"choice", q:"You want to find out which people in <code>registrations</code> also appear in the <code>zoom</code> tab. Which column is the best one to match on?", options:["First Name","Email Address","utm_source","Work Experience"], answer:1, explain:"Email is in both tabs and is different for each person. Names can repeat: two people can both be called Rahul."},
@@ -487,20 +518,24 @@ intro:`<p class="lede">Formulas can do maths. Open the <code>ad_spend</code> tab
 <tr><td><code>=</code> <code>&lt;&gt;</code> <code>&gt;</code> <code>&lt;</code> <code>&gt;=</code> <code>&lt;=</code></td><td>Compare: equal, not equal, more than, less than, more than or equal, less than or equal. A comparison answers <code>TRUE</code> or <code>FALSE</code>.</td></tr>
 </tbody></table></div>
 <h2>Cost per lead</h2>
-<p><b>Cost per lead</b> (CPL) is how much you paid for each sign-up: spend divided by leads. For the first ad that's <code>=D2/E2</code>, which is 2450 ÷ 18 = 136.11. Lower is better.</p>
+<p>Companies that run ads always ask one question: how much did each sign-up cost us? That number is called the <b>cost per lead</b>, or <b>CPL</b> for short.</p>
+<pre>Cost per lead = Spend ÷ Leads</pre>
+<p>Example: the first ad cost ₹2,450 and 18 people signed up from it. 2450 ÷ 18 = 136.11, so each sign-up cost about ₹136. In a formula that's <code>=D2/E2</code>. <b>Lower is better</b>: a lower cost per lead means you got more sign-ups for the same money.</p>
 <div class="try">${T('=D2/E2','ad_spend!F2')}${T('=D2*2','ad_spend!F2')}${T('=E2>15','ad_spend!F2')}</div>`,
 todo:`<p>Work in the empty columns F and G of the <code>ad_spend</code> tab. Each exercise shows the exact cell.</p>`,
 ch:[
- {id:"c3a", q:"Work out the cost per lead of the first ad (row 2): its spend divided by its leads.", at:"ad_spend!F2", ref:'=D2/E2', hint:"Spend is in column D and leads in column E, both on row 2."},
- {id:"c3b", q:"Is the first ad's cost per lead more than 150? Write a formula that answers TRUE or FALSE.", at:"ad_spend!G2", ref:'=D2/E2>150', hint:"Work out the cost per lead, then compare it: <code>=D2/E2&gt;150</code>."},
- {id:"c3c", q:"Cost per lead for every ad. Write it for row 2, and Check copies it down to row 11. One row will show an error: look at that ad's leads to see why.", at:"ad_spend!F2", fill:11, ref:'=D2/E2', hint:"Same formula as Exercise 1. The error is expected. You'll learn to fix it on Day 3.", explain:"The ad in row 10 got 0 leads, and you can't divide by zero, so Sheets shows <code>#DIV/0!</code>."}
+ {id:"c3a", q:"Work out the cost per lead of the first ad (row 2). Cost per lead = spend ÷ leads.", at:"ad_spend!F2", ref:'=D2/E2', hint:"Cost per lead = spend ÷ leads. Spend is in column D and leads in column E, both on row 2. In a formula, ÷ is written <code>/</code>."},
+ {id:"c3b", q:"Is the first ad's cost per lead (spend ÷ leads) more than 150? Write a formula that answers TRUE or FALSE.", at:"ad_spend!G2", ref:'=D2/E2>150', hint:"First work out the cost per lead (spend ÷ leads, so <code>D2/E2</code>), then compare it with 150 using <code>&gt;</code>: <code>=D2/E2&gt;150</code>."},
+ {id:"c3c", q:"Cost per lead (spend ÷ leads) for every ad. Write it for row 2, and Check copies it down to row 11. One row will show an error: look at that ad's leads to see why.", at:"ad_spend!F2", fill:11, ref:'=D2/E2', hint:"Same formula as Exercise 1: spend ÷ leads, <code>=D2/E2</code>. The error is expected. You'll learn to fix it on Day 3.", explain:"The ad in row 10 got 0 leads, and you can't divide by zero, so Sheets shows <code>#DIV/0!</code>."}
 ]});
 
 L.push({id:"l4", day:1, short:"Locking an address with $",
 title:"Locking an address with $",
 intro:`<p class="lede">In the last lesson, copying a formula down moved its addresses down too. Usually that's right. But sometimes one part of the formula has to point at the <b>same cell on every row</b>, like a total. You stop that part from moving by putting a <code>$</code> sign in it.</p>
 <h2>An example where moving goes wrong</h2>
-<p>On the <code>ad_spend</code> tab, say you want each ad's share of the total spend. For the first ad, that's its spend (D2) divided by the total of all ten ads (D2 to D11):</p>
+<p>On the <code>ad_spend</code> tab, say you want each ad's <b>share of the total spend</b>: what part of all the ad money went to that one ad. If an ad's share is 0.25, a quarter (25%) of all the money was spent on it.</p>
+<pre>Share of spend = this ad's spend ÷ total spend of all ads</pre>
+<p>For the first ad, that's its spend (D2) divided by the total of all ten ads (D2 to D11):</p>
 <pre>=D2/SUM(D2:D11)</pre>
 <p>That's right for row 2. Now copy it down. Every address moves down one row each time:</p>
 <div class="tablewrap"><table class="map"><thead><tr><th>Row</th><th>The formula after copying</th><th>Right?</th></tr></thead><tbody>
@@ -526,7 +561,7 @@ intro:`<p class="lede">In the last lesson, copying a formula down moved its addr
 <div class="try">${T('=SUM($D$2:$D$11)','ad_spend!F2')}${T('=D2/SUM($D$2:$D$11)','ad_spend!F2')}</div>`,
 todo:`<p>Exercise 1 goes in <b>cell F2</b> of the <code>ad_spend</code> tab. You don't need to open the tab yourself: clicking in the formula box opens it for you.</p><p>When you press Check, your formula is copied down to row 11, so you'll see straight away whether the total stayed locked. Try it once <i>without</i> the $ signs first, to see what goes wrong.</p><p>Questions 2 and 3 are multiple choice.</p>`,
 ch:[
- {id:"c4a", q:"Each ad's share of the total spend. Divide the ad's spend (D2) by the total of D2 to D11, and lock the total with $ signs.", at:"ad_spend!F2", fill:11, ref:'=D2/SUM($D$2:$D$11)', hint:"<code>=D2/SUM($D$2:$D$11)</code>. The answers are small decimals, like 0.14, which means 14%. All ten add up to 1."},
+ {id:"c4a", q:"Each ad's share of the total spend. Divide the ad's spend (D2) by the total of D2 to D11, and lock the total with $ signs.", at:"ad_spend!F2", fill:11, ref:'=D2/SUM($D$2:$D$11)', hint:"Share = this ad's spend ÷ total spend. This ad's spend is <code>D2</code>; the total is <code>SUM($D$2:$D$11)</code>, locked with $. Together: <code>=D2/SUM($D$2:$D$11)</code>. The answers are small decimals, like 0.14, which means 14%. All ten add up to 1."},
  {id:"c4b", type:"choice", q:"Cell F2 has <code>=D2/D12</code>, with no $ signs. You copy it one row down. What does cell F3 contain?", options:["=D3/D12","=D3/D13","=D2/D12","=D2/D13"], answer:1, explain:"Both addresses are relative, so both move down a row. That's why a total needs $ signs."},
  {id:"c4c", type:"choice", q:"Which version keeps pointing at row 12 when you copy it down?", options:["=D2/D12","=D2/$D12","=D2/D$12"], answer:2, explain:"The $ in front of 12 locks the row. $D$12 would work too."}
 ]});
@@ -573,8 +608,8 @@ intro:`<ul><li><code>COUNT(range)</code> counts the cells that hold <b>numbers</
 <div class="try">${T('=COUNTA(A2:A15)','registrations!J2')}${T('=COUNTA(H2:H15)','registrations!J2')}${T('=COUNT(D2:D11)','ad_spend!H2')}</div>`,
 todo:`<p>Exercise 1 goes in <b>cell J2</b> of <code>registrations</code>. Exercise 2 goes in <b>cell F2</b> of <code>ad_spend</code>.</p>`,
 ch:[
- {id:"c6a", q:"Some people left utm_source (column H) empty. Count how many people <i>have</i> filled it in, rows 2 to 15.", at:"registrations!J2", ref:'=COUNTA(H2:H15)', must:["COUNTA"], hint:"COUNTA skips empty cells. Use it on H2:H15."},
- {id:"c6b", q:"The first ad's cost per lead, rounded to a whole number.", at:"ad_spend!F2", ref:'=ROUND(D2/E2,0)', must:["ROUND"], hint:"Put the division inside ROUND: <code>ROUND(D2/E2, 0)</code>. The 0 means no decimal places."}
+ {id:"c6a", q:"Column H, utm_source, shows where each person came from (like whatsapp or instagram). For some people it's empty because nobody knows. Count how many people <i>do</i> have a source, rows 2 to 15.", at:"registrations!J2", ref:'=COUNTA(H2:H15)', must:["COUNTA"], hint:"COUNTA counts cells that aren't empty, so it skips the people with no source. Use it on H2:H15."},
+ {id:"c6b", q:"The first ad's cost per lead (spend ÷ leads), rounded to a whole number.", at:"ad_spend!F2", ref:'=ROUND(D2/E2,0)', must:["ROUND"], hint:"Cost per lead = spend ÷ leads, which is <code>D2/E2</code>. Put that inside ROUND: <code>ROUND(D2/E2, 0)</code>. The 0 means no decimal places."}
 ]});
 
 L.push({id:"l7", day:2, short:"Using other tabs",
@@ -590,9 +625,9 @@ intro:`<p class="lede">So far every formula used cells on its own tab. To use a 
 <div class="try">${T('=zoom!C2','summary!D2')}${T('=COUNTA(registrations!A2:A15)','summary!B4')}</div>`,
 todo:`<p>Your answers go in column B of the <code>summary</code> tab, next to the label that says what each number is. Each exercise shows the exact cell.</p>`,
 ch:[
- {id:"c7a", q:"How many people signed up through the website form? Count the Submission IDs in column A of <code>registrations</code>, rows 2 to 15.", at:"summary!B4", ref:'=COUNTA(registrations!A2:A15)', must:["COUNTA"], hint:"<code>=COUNTA(registrations!A2:A15)</code>"},
+ {id:"c7a", q:"How many people signed up through the website form? Count the Submission IDs in column A of <code>registrations</code>, rows 2 to 15.", at:"summary!B4", ref:'=COUNTA(registrations!A2:A15)', must:["COUNTA"], hint:"Every sign-up has a Submission ID, so counting the filled cells in column A counts the sign-ups. Add the tab name in front because it's a different tab: <code>=COUNTA(registrations!A2:A15)</code>."},
  {id:"c7b", q:"How many people are in the Zoom list? Count the emails in column A of <code>zoom</code>, rows 2 to 12.", at:"summary!B5", ref:'=COUNTA(zoom!A2:A12)', hint:"Same idea as Exercise 1, on the zoom tab."},
- {id:"c7c", q:"The overall cost per lead: total spend divided by total leads. Both totals are already on this tab, in B2 and B3.", at:"summary!B6", ref:'=B2/B3', hint:"B2 and B3 are on the same tab as your answer, so you don't need a tab name."}
+ {id:"c7c", q:"The overall cost per lead across all ads: total spend ÷ total leads. Both totals are already on this tab: total spend in B2, total leads in B3.", at:"summary!B6", ref:'=B2/B3', hint:"Cost per lead = spend ÷ leads. Here you use the totals: B2 (all the money spent) ÷ B3 (all the sign-ups from ads). They're on the same tab as your answer, so you don't need a tab name."}
 ]});
 
 L.push({id:"l8", day:2, short:"Making choices: IF",
@@ -606,9 +641,9 @@ intro:`<p class="lede"><code>IF</code> lets a formula make a choice: if somethin
 <div class="try">${T('=IF(E2<10,"Check","OK")','ad_spend!F2')}${T('=AND(C2="ig",E2>=15)','ad_spend!F2')}</div>`,
 todo:`<p>Exercises 1 and 2 go in <b>cell F2</b> of <code>ad_spend</code>. Exercise 3 goes in <b>cell J2</b> of <code>registrations</code>. In all three, Check copies your formula down so every row gets its own answer.</p>`,
 ch:[
- {id:"c8a", q:"Label every ad: <code>Check</code> if it got fewer than 10 leads, otherwise <code>OK</code>.", at:"ad_spend!F2", fill:11, ref:'=IF(E2<10,"Check","OK")', must:["IF"], hint:"<code>=IF(E2&lt;10, \"Check\", \"OK\")</code>"},
- {id:"c8b", q:"Label Instagram ads (<code>ig</code> in column C) that got 15 or more leads as <code>Scale</code>. Leave every other row empty.", at:"ad_spend!F2", fill:11, ref:'=IF(AND(C2="ig",E2>=15),"Scale","")', must:["IF","AND"], hint:"Both things must be true, so use AND inside IF. Use <code>\"\"</code> for the empty answer."},
- {id:"c8c", q:"Label each sign-up <code>Community</code> if utm_source (column H) is whatsapp or instagram, otherwise <code>Other</code>.", at:"registrations!J2", fill:15, ref:'=IF(OR(H2="whatsapp",H2="instagram"),"Community","Other")', must:["IF","OR"], hint:"Either one is enough, so use OR inside IF."}
+ {id:"c8a", q:"Label every ad: <code>Check</code> if it got fewer than 10 leads (sign-ups, column E), otherwise <code>OK</code>. \"Check\" here means someone should look at why that ad isn't working.", at:"ad_spend!F2", fill:11, ref:'=IF(E2<10,"Check","OK")', must:["IF"], hint:"The question is \"are the leads in E2 fewer than 10?\", which is <code>E2&lt;10</code>. If yes, show \"Check\"; if no, \"OK\": <code>=IF(E2&lt;10, \"Check\", \"OK\")</code>."},
+ {id:"c8b", q:"Find the Instagram ads that are working well. Label an ad <code>Scale</code> (meaning \"spend more on it\") if it ran on Instagram (<code>ig</code> in column C) <b>and</b> got 15 or more leads (column E). Leave every other row empty.", at:"ad_spend!F2", fill:11, ref:'=IF(AND(C2="ig",E2>=15),"Scale","")', must:["IF","AND"], hint:"Two things must both be true: <code>C2=\"ig\"</code> and <code>E2&gt;=15</code>. Put them in AND, and put AND inside IF. Use <code>\"\"</code> for the empty answer."},
+ {id:"c8c", q:"WhatsApp and Instagram are where the company's own followers are, so sign-ups from there count as \"Community\". Label each sign-up <code>Community</code> if utm_source (column H) is whatsapp <b>or</b> instagram, otherwise <code>Other</code>.", at:"registrations!J2", fill:15, ref:'=IF(OR(H2="whatsapp",H2="instagram"),"Community","Other")', must:["IF","OR"], hint:"Either one is enough: <code>H2=\"whatsapp\"</code> or <code>H2=\"instagram\"</code>. Put them in OR, and OR inside IF."}
 ]});
 
 L.push({id:"t2", day:2, short:"Paste values only",
@@ -653,7 +688,7 @@ intro:`<p class="lede">These functions take out part of a piece of text, or meas
 <div class="real"><span class="lbl">Seen in a real webinar sheet</span>An "International Lead" column:<pre>=IF(H2:H&lt;&gt;"", IF(LEFT(H2:H, 2) = "91", "No", "Yes"), "")</pre>If there's a phone number: starting with 91 means India ("No"), anything else is international ("Yes").</div>`,
 todo:`<p>All three go in the <code>registrations</code> tab. Exercises 1 and 2 use <b>cell J2</b>; Exercise 3 uses <b>cell J8</b>.</p>`,
 ch:[
- {id:"c10a", q:"An International Lead label for everyone: <code>No</code> if the phone number (column D) starts with 91, otherwise <code>Yes</code>.", at:"registrations!J2", fill:15, ref:'=IF(LEFT(D2,2)="91","No","Yes")', must:["LEFT","IF"], hint:"<code>=IF(LEFT(D2,2)=\"91\", \"No\", \"Yes\")</code>"},
+ {id:"c10a", q:"Is each person from outside India? 91 is India's country code, so a phone number (column D) that starts with 91 is Indian. Show <code>No</code> if it starts with 91, otherwise <code>Yes</code>. This column is called International Lead.", at:"registrations!J2", fill:15, ref:'=IF(LEFT(D2,2)="91","No","Yes")', must:["LEFT","IF"], hint:"<code>LEFT(D2,2)</code> gives the first 2 digits of the phone number. Ask whether they equal \"91\" inside IF: <code>=IF(LEFT(D2,2)=\"91\", \"No\", \"Yes\")</code>."},
  {id:"c10b", q:"Just the date from Asha's sign-up time (I2).", at:"registrations!J2", ref:'=LEFT(I2,10)', must:["LEFT"], hint:"The date is the first 10 characters."},
  {id:"c10c", q:"How many digits are in Sam's phone number (D8)?", at:"registrations!J8", ref:'=LEN(D8)', must:["LEN"], hint:"It's one fewer than an Indian number, which is another way to spot international leads."}
 ]});
@@ -700,8 +735,8 @@ intro:`<pre>=IFERROR( formula , what to show if it fails )</pre>
 <p><b>Be careful:</b> IFERROR hides every error, including real mistakes. Only add it to formulas you've already checked work.</p>`,
 todo:`<p>Both exercises go in <b>cell F2</b> of <code>ad_spend</code>, and Check copies them down to row 11.</p>`,
 ch:[
- {id:"c13a", q:"Cost per lead for every ad, showing <code>0</code> instead of <code>#DIV/0!</code>.", at:"ad_spend!F2", fill:11, ref:'=IFERROR(D2/E2,0)', must:["IFERROR"], hint:"<code>=IFERROR(D2/E2, 0)</code>"},
- {id:"c13b", q:"Cost per lead rounded to a whole number, showing the words <code>no leads</code> when an ad has none.", at:"ad_spend!F2", fill:11, ref:'=IFERROR(ROUND(D2/E2,0),"no leads")', must:["IFERROR","ROUND"], hint:"ROUND goes inside IFERROR: <code>=IFERROR(ROUND(D2/E2,0), \"no leads\")</code>."}
+ {id:"c13a", q:"Cost per lead (spend ÷ leads) for every ad, showing <code>0</code> instead of <code>#DIV/0!</code> for the ad with no leads.", at:"ad_spend!F2", fill:11, ref:'=IFERROR(D2/E2,0)', must:["IFERROR"], hint:"Cost per lead is <code>D2/E2</code>. Wrap it in IFERROR and give 0 as the backup: <code>=IFERROR(D2/E2, 0)</code>."},
+ {id:"c13b", q:"Cost per lead (spend ÷ leads) rounded to a whole number, showing the words <code>no leads</code> when an ad has none.", at:"ad_spend!F2", fill:11, ref:'=IFERROR(ROUND(D2/E2,0),"no leads")', must:["IFERROR","ROUND"], hint:"Start with the cost per lead, <code>D2/E2</code>. Round it: <code>ROUND(D2/E2,0)</code>. Then wrap that in IFERROR: <code>=IFERROR(ROUND(D2/E2,0), \"no leads\")</code>."}
 ]});
 
 L.push({id:"t3", day:3, short:"Highlight duplicates",
@@ -715,7 +750,7 @@ ch:[
 /* ===== DAY 4 ===== */
 L.push({id:"l14", day:4, short:"Counting by group",
 title:"Counting and adding by group: COUNTIF, SUMIF",
-intro:`<p class="lede">Most questions you'll get are "how many" or "how much" for one group: how many people came from WhatsApp, how much was spent on one set of ads. These functions answer that in one cell.</p>
+intro:`<p class="lede">Most questions you'll get are "how many" or "how much" for one group: how many people came from WhatsApp, how much money went on one group of ads. These functions answer that in one cell.</p>
 <div class="tablewrap"><table class="map"><thead><tr><th>Formula</th><th>Answers</th></tr></thead><tbody>
 <tr><td><code>COUNTIF(range, "whatsapp")</code></td><td>How many cells say whatsapp</td></tr>
 <tr><td><code>COUNTIF(range, "&gt;=30")</code></td><td>How many are 30 or more. A comparison goes inside the quotes.</td></tr>
@@ -725,8 +760,8 @@ intro:`<p class="lede">Most questions you'll get are "how many" or "how much" fo
 </tbody></table></div>`,
 todo:`<p>Your answers go in column B of the <code>summary</code> tab, next to the matching label. The formulas reach into the data tabs, like you did on Day 2.</p>`,
 ch:[
- {id:"c14a", q:"How many sign-ups came from whatsapp? The source is column H of <code>registrations</code>.", at:"summary!B7", ref:'=COUNTIF(registrations!H2:H15,"whatsapp")', must:["COUNTIF"], hint:"<code>=COUNTIF(registrations!H2:H15, \"whatsapp\")</code>"},
- {id:"c14b", q:"How much was spent on the <code>broad</code> ad set? The ad set is column B of <code>ad_spend</code> and the spend is column D.", at:"summary!B8", ref:'=SUMIF(ad_spend!B2:B11,"broad",ad_spend!D2:D11)', must:["SUMIF"], hint:"Check column B for \"broad\", and add up column D: <code>=SUMIF(ad_spend!B2:B11, \"broad\", ad_spend!D2:D11)</code>."},
+ {id:"c14a", q:"How many sign-ups came from whatsapp? The source is column H of <code>registrations</code>.", at:"summary!B7", ref:'=COUNTIF(registrations!H2:H15,"whatsapp")', must:["COUNTIF"], hint:"COUNTIF counts the cells in a range that match a rule. Range: column H of registrations. Rule: \"whatsapp\". Together: <code>=COUNTIF(registrations!H2:H15, \"whatsapp\")</code>."},
+ {id:"c14b", q:"How much money was spent on the <code>broad</code> ad set? (An ad set is a group of ads shown to the same kind of people; <code>broad</code> ads are shown to anyone.) The ad set is in column B of <code>ad_spend</code> and the spend in column D.", at:"summary!B8", ref:'=SUMIF(ad_spend!B2:B11,"broad",ad_spend!D2:D11)', must:["SUMIF"], hint:"You want the total spend, but only for rows where the ad set is broad. SUMIF looks in column B for \"broad\" and adds up column D on those rows: <code>=SUMIF(ad_spend!B2:B11, \"broad\", ad_spend!D2:D11)</code>."},
  {id:"c14c", q:"How many Instagram ads (<code>ig</code> in column C) got 15 or more leads (column E)?", at:"summary!B9", ref:'=COUNTIFS(ad_spend!C2:C11,"ig",ad_spend!E2:E11,">=15")', must:["COUNTIFS"], hint:"Two rules, so COUNTIFS: platform is <code>\"ig\"</code>, and leads are <code>\"&gt;=15\"</code>."},
  {id:"c14d", q:"How many people in the Zoom list stayed 30 minutes or more (column C)?", at:"summary!B10", ref:'=COUNTIF(zoom!C2:C12,">=30")', must:["COUNTIF"], hint:"The rule <code>\"&gt;=30\"</code> goes in quotes."}
 ]});
@@ -740,7 +775,7 @@ intro:`<ul><li><code>UNIQUE(range)</code> lists each different value once.</li>
 <div class="try">${T('=UNIQUE(H2:H15)','registrations!J2')}${T('=COUNTIF($E$2:$E$15,E2)','registrations!J2')}</div>`,
 todo:`<p>Exercise 1 goes in <b>cell B11</b> of <code>summary</code>. Exercises 2 and 3 go in <b>cell J2</b> of <code>registrations</code>.</p>`,
 ch:[
- {id:"c15a", q:"How many different email addresses are in <code>registrations</code> (column E, rows 2 to 15)?", at:"summary!B11", ref:'=COUNTA(UNIQUE(registrations!E2:E15))', must:["UNIQUE"], hint:"<code>=COUNTA(UNIQUE(registrations!E2:E15))</code>"},
+ {id:"c15a", q:"How many different email addresses are in <code>registrations</code> (column E, rows 2 to 15)?", at:"summary!B11", ref:'=COUNTA(UNIQUE(registrations!E2:E15))', must:["UNIQUE"], hint:"UNIQUE removes the repeats, so Rahul's email is listed once. COUNTA then counts what's left: <code>=COUNTA(UNIQUE(registrations!E2:E15))</code>."},
  {id:"c15b", q:"Mark duplicates: show <code>Duplicate</code> if that row's email appears more than once, otherwise leave it empty. Check copies it down.", at:"registrations!J2", fill:15, ref:'=IF(COUNTIF($E$2:$E$15,E2)>1,"Duplicate","")', must:["COUNTIF"], hint:"<code>=IF(COUNTIF($E$2:$E$15,E2)&gt;1, \"Duplicate\", \"\")</code>. Lock the range with $ so it doesn't move."},
  {id:"c15c", q:"List each utm_source once.", at:"registrations!J2", ref:'=UNIQUE(H2:H15)', must:["UNIQUE"], hint:"An empty cell shows up in the list too, because some people have no source. That's fine."}
 ]});
@@ -774,7 +809,7 @@ intro:`<p class="lede">VLOOKUP has two weak spots. The value you search must be 
 <div class="real"><span class="lbl">Seen in a real webinar sheet, simplified</span><pre>VLOOKUP( role , {'Role Map'!C2:C, 'Role Map'!B2:B} , 2 , FALSE )</pre>The <code>{C, B}</code> trick swaps the columns round so VLOOKUP can look left. XLOOKUP just does it.</div>`,
 todo:`<p>Exercise 1 goes in <b>cell G2</b> of <code>ads_leads</code>. Exercise 2 goes in <b>cell J2</b> of <code>registrations</code>. Check copies both down.</p>`,
 ch:[
- {id:"c17a", q:"The group (persona) for every ads lead. Search their job title (column F) in column B of <code>persona_map</code>, and bring back column A.", at:"ads_leads!G2", fill:9, ref:'=XLOOKUP(F2,persona_map!B:B,persona_map!A:A)', must:["XLOOKUP"], hint:"<code>=XLOOKUP(F2, persona_map!B:B, persona_map!A:A)</code>"},
+ {id:"c17a", q:"Teams group similar people under a <b>persona</b>, like Developer or Student, so they can count sign-ups by group. Find the persona for every ads lead: search their job title (column F) in column B of <code>persona_map</code>, and bring back the persona from column A.", at:"ads_leads!G2", fill:9, ref:'=XLOOKUP(F2,persona_map!B:B,persona_map!A:A)', must:["XLOOKUP"], hint:"What to find: the job title, F2. Column to search: persona_map!B:B. Column to bring back: persona_map!A:A. Together: <code>=XLOOKUP(F2, persona_map!B:B, persona_map!A:A)</code>."},
  {id:"c17b", q:"Minutes in the webinar for everyone, using XLOOKUP. Show <code>0</code> for people who didn't come, without using IFERROR.", at:"registrations!J2", fill:15, ref:'=XLOOKUP(TRIM(E2),zoom!A:A,zoom!C:C,0)', must:["XLOOKUP"], ban:["IFERROR"], hint:"XLOOKUP's 4th part is what to show when nothing is found. Don't forget TRIM on the email: <code>=XLOOKUP(TRIM(E2), zoom!A:A, zoom!C:C, 0)</code>."}
 ]});
 
@@ -824,7 +859,7 @@ intro:`<p class="lede"><code>VSTACK(range1, range2)</code> puts one range on top
          FILTER(Ads!A2:AL, Ads!A2:A&lt;&gt;"") )</pre>The header row, then every website sign-up, then every ad sign-up. One formula builds the whole tab, so <b>never type inside it</b>. If something's wrong, fix it in the tab it comes from.</div>`,
 todo:`<p>Exercise 1 goes in <b>cell A2</b> of the <code>mastersheet</code> tab, under the Email header. Question 2 is multiple choice.</p>`,
 ch:[
- {id:"c20a", q:"One list of every email: the website sign-ups first, then the ad sign-ups. Emails are in column E of <code>registrations</code> (rows 2 to 15) and column D of <code>ads_leads</code> (rows 2 to 9).", at:"mastersheet!A2", ref:'=VSTACK(registrations!E2:E15,ads_leads!D2:D9)', must:["VSTACK"], hint:"<code>=VSTACK(registrations!E2:E15, ads_leads!D2:D9)</code>"},
+ {id:"c20a", q:"One list of every email: the website sign-ups first, then the ad sign-ups. Emails are in column E of <code>registrations</code> (rows 2 to 15) and column D of <code>ads_leads</code> (rows 2 to 9).", at:"mastersheet!A2", ref:'=VSTACK(registrations!E2:E15,ads_leads!D2:D9)', must:["VSTACK"], hint:"VSTACK puts the first range on top and the second underneath. First the website emails, then the ad emails: <code>=VSTACK(registrations!E2:E15, ads_leads!D2:D9)</code>."},
  {id:"c20b", type:"choice", q:"A name in the Master tab is wrong. Where do you fix it?", options:["Type over it in the Master tab","In the Organic or Ads tab, where the row comes from","Delete the VSTACK formula","In the Upload tab"], answer:1, explain:"The Master tab is one formula. Fix the original row, and the Master tab updates by itself."}
 ]});
 
@@ -850,9 +885,9 @@ title:"Reading a real-world webinar sheet",
 intro:`<p class="lede">You can now read almost every formula in a typical weekly webinar sheet. Here's how one is put together, and the last few formulas you'll meet.</p>
 <div class="tablewrap"><table class="map"><thead><tr><th>Tab</th><th>Where its data comes from</th></tr></thead><tbody>
 <tr><td><code>Organic</code></td><td>An automation that writes each website sign-up as a new row</td></tr>
-<tr><td><code>Ads</code></td><td><code>IMPORTRANGE</code> from the ad platform's leads sheet</td></tr>
+<tr><td><code>Ads</code></td><td><code>IMPORTRANGE</code> from a separate sheet where the Facebook and Instagram ad sign-ups land</td></tr>
 <tr><td><code>Master</code></td><td>One VSTACK of the two tabs above</td></tr>
-<tr><td><code>Upload</code></td><td>Points at columns in Master. This is the list that gets uploaded to the messaging tool for reminders.</td></tr>
+<tr><td><code>Upload</code></td><td>Points at columns in Master. This list is uploaded to a messaging tool (a service that sends WhatsApp or SMS messages to many people at once) to send webinar reminders.</td></tr>
 <tr><td><code>Pivot</code></td><td>Counts sign-ups by source and by attendance</td></tr>
 </tbody></table></div>
 <div class="real"><span class="lbl">IMPORTRANGE: bring in data from another spreadsheet</span><pre>=IMPORTRANGE("https://docs.google.com/spreadsheets/d/…", "Leads!F2:F")</pre>The first time, it shows <code>#REF!</code> with an <b>Allow access</b> button. Click it once. If someone renames the tab in the other file, it stops working.</div>
